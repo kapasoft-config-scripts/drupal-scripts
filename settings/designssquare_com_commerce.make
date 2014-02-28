@@ -1,0 +1,14 @@
+api = 2
+core = 7.x
+projects[designssquare_com_commerce][type] = "module"
+projects[designssquare_com_commerce][subdir] = contrib
+projects[designssquare_com_commerce][version] = 7.x-1.0
+projects[designssquare_com_commerce][download][type] = "git"
+projects[designssquare_com_commerce][download][url] = "http://github.com/kapasoft-drupal-modules/commerce.git"
+projects[designssquare_com_commerce][download][branch] = "master
+widget[0][name]=desginssquare_com_commerce_views
+widget[0][order]=1
+widget[1][name]=designssquare_com_commerce
+widget[1][order]=2
+widget[2][name]=desginssquare_com_commerce_structure
+widget[2][order]=0

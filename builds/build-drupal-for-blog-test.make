@@ -1,0 +1,49 @@
+api = 2
+core = 7.x
+projects[drupal][type] = core
+projects[drupal][version] = 7.26
+projects[] = jquery_update
+projects[] = module_filter
+projects[] = devel
+projects[] = simplehtmldom
+projects[] = devel_themer
+projects[] = coffee
+projects[] = admin_menu
+projects[] = features_diff
+
+;;wysiwyg
+projects[] = ckeditor
+
+;;from designssquarecom_blog_structure
+projects[] = audiofield
+;;projects[] = block
+;;projects[] = blog
+;;projects[] = comment
+projects[] = context
+;;projects[] = context_ui
+projects[] = ctools
+projects[] = features
+;;projects[] = file
+projects[] = image
+projects[] = jw_player
+projects[] = libraries
+;;projects[] = options
+projects[] = strongarm
+;;projects[] = taxonomy
+;;projects[] = text
+projects[] = uuid
+projects[] = uuid_features
+;;projects[uuid][type] = module
+;;projects[uuid][version] = 1.x-dev
+;;projects[uuid_features][type] = module
+;;projects[uuid_features][version] = 1.x-dev
+projects[] = video
+projects[] = video_presets
+;;projects[] = video_ui
+projects[] = views
+projects[] = entity
+projects[] = entityreference
+;;projects[entity][type] = module
+;;projects[entity][version] = 1.x-dev
+;;projects[entityreference][type] = module
+;;projects[entityreference][version] = 1.x-dev
