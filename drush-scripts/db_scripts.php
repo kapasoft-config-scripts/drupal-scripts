@@ -30,7 +30,7 @@ if (drush_get_option('backup-db')) {
 if (drush_get_option('drop-db')) {
     drush_print("Droping DB...");
     if (_drop_db()) {
-        drush_print("DB Imported.");
+        drush_print("DB Dropped.");
     }
 }
 

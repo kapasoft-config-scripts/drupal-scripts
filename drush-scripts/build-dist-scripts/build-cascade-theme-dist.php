@@ -4,7 +4,7 @@
 ini_set('error_reporting', E_ALL);
 
 $theme_name = 'cascade';
-$ver = '0.6.1';
+$ver = '0.6.2';
 $package_name = 'designssquare-com-theme-cascade';
 $module_dir = '/Users/maxit/Sites/drupal/modules/';
 $theme_dir = '/Users/maxit/Sites/drupal/themes/';
@@ -14,7 +14,7 @@ $git_mod_repo = 'https://github.com/kapasoft-drupal-modules/theme_cascade.git';
 //@ToDo Fix ssh keys with drush to avoid prompt
 //$git_mod_repo = 'git://github.com-kapasoft-drupal-modules:kapasoft-drupal-modules/theme_cascade.git';
 $git_theme_base_repo = 'git@github.com:kapasoft-drupal-themes/bootstrap.git';
-$git_theme_custom_repo = 'git@github.com:kapasoft-drupal-themes/theme_cascade.git';
+$git_theme_custom_repo = 'https://github.com/kapasoft-drupal-themes/theme_cascade.git';
 $dest = $dist_dir.'themes/'.$theme_name.'/'.$package_name.'-'.$ver;
 
 if(file_exists($dest)){
@@ -64,11 +64,15 @@ drush_print('copying documentation ....'.$dest.'/index.html from '.$widget_dist_
 drush_shell_exec('sudo sudo cp '.$widget_dist_custom_dest.'/docs/index.html '.$dest.'/index.html');
 print_r(drush_shell_exec_output());
 
+//ToDo remove git files "sudo rm -rf .git"
 
+//@ToDo fix the struture of the ziped file content
 //create zip file
 drush_print('ziping package....');
 drush_shell_exec('zip -r '.$dest.'.zip '.$dest);
 print_r(drush_shell_exec_output());
+
+
 
 
 drush_print('Done building '.$package_name.' ver-'.$ver);
