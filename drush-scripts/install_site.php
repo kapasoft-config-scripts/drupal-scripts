@@ -28,12 +28,15 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_password = '38394815';
 
 ####BAZAR
-$project = 'bazar';
-$db_name = 'bazar_dev_db';
-$db_user = 'bazar_dev_user';
+//$project = 'bazar';
+//$db_name = 'bazar_dev_db';
+//$db_user = 'bazar_dev_user';
+//$db_password = '38394815';
+
+$project = 'test_bazar';
+$db_name = 'test_bazar_db';
+$db_user = 'test_bazar';
 $db_password = '38394815';
-//$db_name = $project.'_db';
-//$db_user = $project.'_user';
 $debug_mode = TRUE;
 
 # Site Configurations
@@ -42,7 +45,7 @@ $AdminUsername="admin";
 $AdminPassword="password";
 $adminEmail="admin@example.com";
 $siteName= $project." Site";
-$siteSlogan="developing ". $project ." theme";
+$siteSlogan="testing ". $project ." theme";
 $siteLocale="en";
 ##########################################################
 

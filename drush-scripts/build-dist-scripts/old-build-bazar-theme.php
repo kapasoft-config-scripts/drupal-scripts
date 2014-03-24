@@ -4,7 +4,7 @@
 ini_set('error_reporting', E_ALL);
 
 $theme_name = 'bazar';
-$ver = '0.2';
+$ver = '0.4';
 $package_name = 'designssquare-com-bazar-theme';
 $module_dir = '/Users/maxit/Sites/drupal/modules/';
 $theme_dir = '/Users/maxit/Sites/drupal/themes/';

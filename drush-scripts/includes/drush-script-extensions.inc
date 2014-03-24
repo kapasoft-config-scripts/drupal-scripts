@@ -38,7 +38,8 @@ function _process_make_file($make_file, $dest = Null, $options = Null){
     $options['yes'] = TRUE;
     ($contr_dest = drush_get_option('contrib-destination', FALSE)) ? $options['contrib-destination'] = $contr_dest : '' ;
    }
-//    print_r($options);
+    print("Debug - OPTIONS:");
+    print_r($options);
 //    print_r($make_file);
 //    print_r('dest file: '.$dest);
     if($dest){
