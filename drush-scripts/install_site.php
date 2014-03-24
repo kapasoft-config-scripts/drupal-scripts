@@ -27,18 +27,22 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_user = 'test_cascade';
 //$db_password = '38394815';
 
-$project = 'cascade';
-$db_name = 'stage_cascade_db';
-$db_user = 'stage_cascade';
-$db_password = '38394815';
+
+//$project = 'cascade';
+//$db_name = 'stage_cascade_db';
+//$db_user = 'stage_cascade';
+//$db_password = '38394815';
 
 ####BAZAR
 //$project = 'bazar';
 //$db_name = 'bazar_dev_db';
 //$db_user = 'bazar_dev_user';
 //$db_password = '38394815';
-//$db_name = $project.'_db';
-//$db_user = $project.'_user';
+
+$project = 'test_bazar';
+$db_name = 'test_bazar_db';
+$db_user = 'test_bazar';
+$db_password = '38394815';
 $debug_mode = TRUE;
 
 # Site Configurations
@@ -47,7 +51,9 @@ $AdminUsername="admin";
 $AdminPassword="password";
 $adminEmail="admin@example.com";
 $siteName= $project." Site";
+
 $siteSlogan="staging ". $project ." theme";
+//$siteSlogan="testing ". $project ." theme";
 $siteLocale="en";
 ##########################################################
 

@@ -38,7 +38,8 @@ function _process_make_file($make_file, $dest = Null, $options = Null){
     $options['yes'] = TRUE;
     ($contr_dest = drush_get_option('contrib-destination', FALSE)) ? $options['contrib-destination'] = $contr_dest : '' ;
    }
-//    print_r($options);
+    print("Debug - OPTIONS:");
+    print_r($options);
 //    print_r($make_file);
 //    print_r('dest file: '.$dest);
     if($dest){
@@ -56,21 +57,30 @@ function _process_make_file($make_file, $dest = Null, $options = Null){
  * Make a database backup
  */
 function _backup_stuff() {
+
+    $dest = 'drush_backup';
+    if(!file_exists($dest)){
+        drush_print("path to dest folder ".$dest." does not exist. Creating...");
+        drush_shell_exec('mkdir '.$dest);
+        drush_shell_exec('chrom -R 777 '.$dest);
+    }
+
     // backup the db
     $ts = date('Ymdhis');
     //@ToDo fix drush_invoke_process to work
     //(drush_invoke_process('@self', 'sql-dump', array('result-file' =>  'revert_backup.sql'))) ? drush_print('back up success') : drush_print('no back up') ;
-    drush_shell_exec('drush sql-dump --result-file=drush_backup/revert_'.$ts.'_backup.sql --gzip=TRUE');
+    drush_shell_exec('drush sql-dump --result-file='.$dest.'/revert_'.$ts.'_backup.sql --gzip=TRUE');
     print_r(drush_shell_exec_output());
 }
 
 function _import_db(){
-    drush_shell_exec('drush sqlq --file=drush_backup/db_import.sql');
+//    drush_shell_exec('drush sqlq --file=drush_backup/db_import.sql');
+    drush_shell_exec('drush sql-cli < drush_backup/db_import.sql');
     print_r(drush_shell_exec_output());
 }
 
 function _drop_db(){
-    drush_shell_exec('drush sql-drop');
+    drush_shell_exec('drush sql-drop --yes');
     print_r(drush_shell_exec_output());
 }
 

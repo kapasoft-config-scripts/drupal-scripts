@@ -66,8 +66,6 @@ projects[] = ctools
 projects[] = features
 projects[] = libraries
 projects[] = strongarm
-projects[] = uuid
-projects[] = uuid_features
 projects[] = features_extra
 projects[] = views
 projects[] = entity
@@ -77,5 +75,7 @@ projects[] = feeds_tamper
 
 
 ;;for new menu exporter
-;;projects[uuid][version] = 1.x-dev
-;;projects[uuid_features][version] = 1.x-dev
+projects[uuid][version] = 1.x-dev
+projects[uuid_features][version] = 1.x-dev
+;projects[] = uuid
+;projects[] = uuid_features
