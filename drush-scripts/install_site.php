@@ -21,6 +21,11 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_user = 'makapacs';
 //$db_password = '38394815';
 
+$project = 'stage-calypso';
+$db_name = 'stage_calypso_db';
+$db_user = 'stage_calypso';
+$db_password = '38394815';
+
 ####CASCADE
 //$project = 'test-cascade';
 //$db_name = 'test_cascade_db';
@@ -39,11 +44,11 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_user = 'bazar_dev_user';
 //$db_password = '38394815';
 
-$project = 'test_bazar';
-$db_name = 'test_bazar_db';
-$db_user = 'test_bazar';
-$db_password = '38394815';
-$debug_mode = TRUE;
+//$project = 'test_bazar';
+//$db_name = 'test_bazar_db';
+//$db_user = 'test_bazar';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
 
 # Site Configurations
 ##########################################################

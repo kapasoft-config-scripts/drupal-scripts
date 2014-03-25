@@ -5,7 +5,7 @@
 //sudo drush ../config/drush-scripts/revert_changes.php --drop-tables --delete-root
 //sudo drush ../config/drush-scripts/revert_changes.php --revert-untracked-files
 
-require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
+require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');
