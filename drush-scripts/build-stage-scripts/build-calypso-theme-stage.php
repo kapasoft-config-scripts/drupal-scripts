@@ -12,7 +12,7 @@ $debug = true;
 $git_mod_repo = 'https://github.com/kapasoft-drupal-modules/calypso.git';
 $git_util_repo = 'https://github.com/kapasoft-config-scripts/designssquare-utils.git';
 //https://github.com/kapasoft-drupal-themes/bootstrap.git
-$git_theme_base_repo = 'git@github.com:kapasoft-drupal-themes/bootstrap.git';
+$git_theme_base_repo = 'https://github.com/kapasoft-drupal-themes/bootstrap.git';
 $git_theme_custom_repo = 'https://github.com/kapasoft-drupal-themes/calypso.git';
 
 // check if we can bootstrap
@@ -61,6 +61,6 @@ if(!file_exists('docs')){
     drush_shell_exec('mkdir docs');
     print_r(drush_shell_exec_output());
  }
-drush_shell_exec('sudo cp -r '.$widget_dist_custom_dest.'/docs/ docs/');
+drush_shell_exec('sudo cp -r '.$widget_dist_custom_dest.'/docs/ docs/*');
 print_r(drush_shell_exec_output());
 

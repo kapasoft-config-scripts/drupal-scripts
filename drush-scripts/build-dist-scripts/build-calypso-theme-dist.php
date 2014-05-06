@@ -4,7 +4,7 @@
 ini_set('error_reporting', E_ALL);
 
 $artifact_name = drush_get_option('artifact-name','calypso');
-$artifact_type = drush_get_option('artifact_type','theme');
+$artifact_type = drush_get_option('artifact-type','theme');
 $widget_name = 'designssquare_com_'.$artifact_name;
 $ver = drush_get_option('ver','0.2');
 $package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;

@@ -185,3 +185,46 @@ function array_orderby()
     call_user_func_array('array_multisort', $args);
     return array_pop($args);
 }
+
+/************Building Dist***********/
+
+function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){
+    $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
+
+    //retrieving modules to be included in the build
+    $make_file = $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
+    $build_file_parsed = drupal_parse_info_file($make_file);
+    $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+
+    /*****DEBUG******/
+    if ($debug) {
+        drush_print('Modules to include:');
+        print_r($widget_modules);
+    }
+
+    foreach ($widget_modules as $key => $module) {
+        switch($module){
+            case 'designssquare_lib':
+                $widget_dependency_name = 'designssquare_lib';
+                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib';
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_alias_path':
+                $widget_dependency_name = 'designssquare_alias_path';
+                $widget_dist_dest_lib = $dest . '/modules/designssquare_lib_alias';
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.$widget_dependency_name.'.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_lib_assets':
+                $widget_dependency_name = 'designssquare_lib_assets';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-assets.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+        }
+    }
+}

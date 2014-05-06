@@ -21,10 +21,10 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_user = 'makapacs';
 //$db_password = '38394815';
 
-$project = 'stage-calypso';
-$db_name = 'stage_calypso_db';
-$db_user = 'stage_calypso';
-$db_password = '38394815';
+//$project = 'stage-calypso';
+//$db_name = 'stage_calypso_db';
+//$db_user = 'stage_calypso';
+//$db_password = '38394815';
 
 ####CASCADE
 //$project = 'test-cascade';
@@ -47,6 +47,47 @@ $db_password = '38394815';
 //$project = 'test_bazar';
 //$db_name = 'test_bazar_db';
 //$db_user = 'test_bazar';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###MELON
+//$project = 'dev_melon';
+//$db_name = 'dev_melon_db';
+//$db_user = 'dev_melon';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###DESIGNS SQUARE
+//$project = 'dev_designssquare';
+//$db_name = 'dev_designssquare_db';
+//$db_user = 'dev_ds_user';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###BUILDER
+//$project = 'dev_builder';
+//$db_name = 'dev_builder_db';
+//$db_user = 'dev_builder';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###LOAM
+//$project = 'dev_loam';
+//$db_name = 'dev_loam_db';
+//$db_user = 'dev_loam';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+$project = 'test_loam';
+$db_name = 'test_loam_db';
+$db_user = 'test_loam';
+$db_password = '38394815';
+$debug_mode = TRUE;
+
+###SLIDER
+//$project = 'dev_slider';
+//$db_name = 'dev_slider_db';
+//$db_user = 'dev_slider';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 

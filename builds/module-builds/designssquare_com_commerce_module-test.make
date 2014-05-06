@@ -12,8 +12,10 @@ widget[1][name]=desginssquare_com_commerce_data
 widget[1][order]=2
 widget[2][name]=desginssquare_com_commerce_structure
 widget[2][order]=0
-widget[3][name] = designssquare_sample_product_import
+widget[3][name] = ds_sample_product_export
 widget[3][order]=3
+widget[4][name] = ds_sample_product_import
+widget[4][order]=4
 
 ;;dev modules
 ;projects[] = module_filter

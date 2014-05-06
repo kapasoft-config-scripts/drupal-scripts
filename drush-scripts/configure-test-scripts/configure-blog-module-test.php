@@ -1,6 +1,6 @@
 #!/usr/bin/env drush
 <?php
-require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
+require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
 // Same as error_reporting(E_ALL);
 ini_set('error_reporting', E_ALL);
 
@@ -8,11 +8,7 @@ $artifact_name = drush_get_option('artifact-name');
 $artifact_type = drush_get_option('artifact-type','module');
 $env = drush_get_option('env','test');
 if(!isset($artifact_name) || empty($artifact_name) || empty($artifact_type)){drush_die("Artifact name or type not specified");}
-$package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
 $artifact_dir = 'designssquare_com_'.$artifact_name;
-$module_dir = 'sites/all/modules';
-$theme_dir = 'sites/all/themes';
-$dist_dir = '/Users/maxit/Sites/drupal/dist/';
 $make_file = '/Users/maxit/Sites/drupal/config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'-'.$env.'.make';
 $debug = false;
 
@@ -80,6 +76,11 @@ foreach($dependencies_without_widgets as $key => $dependent_module){
 //Link VideoJs
 drush_print('Linking videojs....');
 $player_dest = 'sites/all/libraries/video-js';
+if(!file_exists('sites/all/libraries')){
+    drush_print('sites/all/libraries directory does not exist...creating one');
+    drush_shell_exec('sudo mkdir sites/all/libraries');
+    print_r(drush_shell_exec_output());
+}
 $payer_src = '../modules/'.$artifact_dir.'/libraries/video-js';
 drush_print('linking player '.$player_dest.' to path '.$payer_src);
 //sudo ln -s ../modules/designssquare_com_blog/libraries/video-js sites/all/libraries/video-js
@@ -103,11 +104,12 @@ drush_print('...configured audio player lib to path '.$payer_audio_src);
 //drush_shell_exec('sudo cp -R '.$blog_files_dir.' sites/default/files/');
 //print_r(drush_shell_exec_output());
 
-//move sample data files(images, videos, audios) into profile
-$blog_frofiles_dir = 'sites/all/modules/'.$artifact_dir.'/profiles/';
+
+//move sample data files(images, videos, audios) into profile. NOT NEEDED IF FEATURE EXPORT INCLUDES PROFILE IN MODULE
+$blog_profiles_dir = 'sites/all/modules/'.$artifact_dir.'/profiles/';
 drush_print('moving sample data artifacts(i.e images, video files, audio files ...');
-if(!file_exists($blog_frofiles_dir)){
-    drush_die("path to blog profiles does not exist: ".$blog_frofiles_dir, 0);
+if(!file_exists($blog_profiles_dir)){
+    drush_die("path to blog profiles does not exist: ".$blog_profiles_dir, 0);
 }
-drush_shell_exec('sudo cp -R '.$blog_frofiles_dir.' profiles/');
+drush_shell_exec('sudo cp -R '.$blog_profiles_dir.' profiles/');
 print_r(drush_shell_exec_output());

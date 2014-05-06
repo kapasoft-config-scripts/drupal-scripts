@@ -5,11 +5,10 @@ ini_set('error_reporting', E_ALL);
 
 //$test_dir_name = drush_get_option('test-dir-name');
 $name = drush_get_option('artifact-name','blog');
-$type = drush_get_option('artifact_type','module');
+$type = drush_get_option('artifact-type','module');
 $artifact_name = 'designssquare_com_'.$name;
 $ver = drush_get_option('ver','0.1');
 $package_name = 'designssquare-com-'.$type.'-'.$name;
-$module_dir = '/Users/maxit/Sites/drupal/modules/';
 $test_artifact_dir = getcwd();
 $dist_dir = '/Users/maxit/Sites/drupal/dist/';
 $dist_package = $dist_dir.'modules/'.$artifact_name.'/'.$package_name.'-'.$ver;

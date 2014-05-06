@@ -8,12 +8,10 @@ $artifact_name = drush_get_option('artifact-name');
 $artifact_type = drush_get_option('artifact-type','module');
 $env = drush_get_option('env','test');
 if(!isset($artifact_name) || empty($artifact_name) || empty($artifact_type)){drush_die("Artifact name or type not specified");}
-$package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
-$module_dir = 'sites/all/modules';
-$theme_dir = 'sites/all/themes';
-$dist_dir = '/Users/maxit/Sites/drupal/dist/';
-$make_file = '/Users/maxit/Sites/drupal/config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'-'.$env.'.make';
-$debug = false;
+//$package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
+//$artifact_dir = 'designssquare_com_'.$artifact_name;
+$make_file = '/Users/maxit/Sites/drupal/config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
+$debug = true;
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');
@@ -55,19 +53,19 @@ if($debug){
 }
 
 
-
+if($env == 'dev'){
 //@ToDo grab the dev modules from make file perhaps
 //Adding Dev modules
-//$all_dependent_modules[] = 'module_filter';
-////$all_dependent_modules[] = 'devel';
+$all_dependent_modules[] = 'module_filter';
+$all_dependent_modules[] = 'devel';
 ////@ToDo simplehtmldom now requires lib to copied https://drupal.org/node/1645932
-//$all_dependent_modules[] = 'simplehtmldom';
-//$all_dependent_modules[] = 'devel_themer';
-//$all_dependent_modules[] = 'coffee';
-//$all_dependent_modules[] = 'admin_menu';
-//$all_dependent_modules[] = 'features_diff';
-//$all_dependent_modules[] = 'jquery_update';
-//$all_dependent_modules[] = 'media';
+$all_dependent_modules[] = 'simplehtmldom';
+$all_dependent_modules[] = 'devel_themer';
+$all_dependent_modules[] = 'coffee';
+$all_dependent_modules[] = 'admin_menu';
+$all_dependent_modules[] = 'features_diff';
+$all_dependent_modules[] = 'jquery_update';
+}
 
 //remove widget modules for being enabled
 $dependencies_without_widgets = array_diff($all_dependent_modules, $widget_modules);
@@ -75,10 +73,3 @@ drush_print('ENABLING DEPENDENT MODULES ...');
 foreach($dependencies_without_widgets as $key => $dependent_module){
     drush_print('module '. $dependent_module . ((drush_invoke_process("@self", "pm-enable", array($dependent_module)) ? ' WAS ' : ' WAS NOT')) . ' enabled');
 }
-
-//drush_print('configuring jquery_update...');
-//variable_set('jquery_update_compression_type', "min");
-//variable_set('jquery_update_jquery_cdn',"google");
-//variable_set('jquery_update_jquery_admin_version',"1.10");
-//variable_set('jquery_update_jquery_version',"1.10");
-

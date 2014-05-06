@@ -2,22 +2,24 @@
 <?php
 // Same as error_reporting(E_ALL);
 ini_set('error_reporting', E_ALL);
+require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
+
+
 
 $artifact_name = drush_get_option('artifact-name','blog');
-$artifact_type = drush_get_option('dartifact-type','module');
-$widget_name = 'designssquare_com_'.$artifact_name;
+$artifact_type = drush_get_option('artifact-type','module');
+$widget_name = 'designssquare_com_'.$artifact_type.'_'.$artifact_name;
 $ver = drush_get_option('ver','0.1');
 $package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
-$module_dir = '/Users/maxit/Sites/drupal/modules/';
-$theme_dir = '/Users/maxit/Sites/drupal/themes/';
 $dist_dir = '/Users/maxit/Sites/drupal/dist/';
+$dist_dir = '/Users/maxit/Sites/drupal/dist-sites/';
 $debug = true;
 //@ToDo Fix ssh keys with drush to avoid prompt
-$git_mod_repo = 'https://github.com/kapasoft-drupal-modules/blog.git';
+$git_mod_repo = 'https://github.com/kapasoft-drupal-'.$artifact_type.'-modules/'.$artifact_name.'.git';
 $git_util_repo = 'https://github.com/kapasoft-config-scripts/designssquare-utils.git';
 
 $full_package_name = $package_name.'-'.$ver;
-$dest_dir = $dist_dir.'modules/'.$widget_name;
+$dest_dir = $dist_dir.$artifact_type.'s/'.$widget_name;
 $dest = $dest_dir.'/'.$full_package_name;
 if(file_exists($dest)){
     //clean
@@ -29,19 +31,26 @@ if(file_exists($dest)){
     print_r(drush_shell_exec_output());
 }
 
-//build modules
+//build main
 $widget_dist_dest = $dest.'/modules/'.$widget_name;
-drush_print('building '.$widget_name.' module ...kapasoft-drupal-modules');
+drush_print('building '.$widget_name.' module ...kapasoft-drupal-'.$artifact_type.'-modules');
 drush_shell_exec('git clone '.$git_mod_repo.' '.$widget_dist_dest);
 print_r(drush_shell_exec_output());
 
-//build designssqure common module
-$widget_name = 'designssquare_lib';
-$widget_dist_dest_lib = $dest.'/modules/designssquare_lib';
-drush_print('building '.$widget_name.' module ...kapasoft-config-scripts');
-drush_shell_exec('git clone '.$git_util_repo.' '.$widget_dist_dest_lib);
-print_r(drush_shell_exec_output());
+////build common modules
+build_modules($artifact_type, $artifact_name, $dest, $debug);
 
+////build designssqure common module
+//$ds_lib_included = drush_get_option('ds-lib', 'no');
+//if($ds_lib_included == 'yes'){
+//    $widget_name = 'designssquare_lib';
+//    $widget_dist_dest_lib = $dest.'/modules/designssquare_lib';
+//    drush_print('building '.$widget_name.' module ...kapasoft-config-scripts');
+//    drush_shell_exec('git clone '.$git_util_repo.' '.$widget_dist_dest_lib);
+//    print_r(drush_shell_exec_output());
+//
+//
+//}
 
 //copy documenation
 drush_print('copying documentation ....'.$dest.'/index.html from '.$widget_dist_dest.'/docs/index.html');

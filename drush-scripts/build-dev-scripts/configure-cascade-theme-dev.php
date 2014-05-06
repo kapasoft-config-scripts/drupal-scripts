@@ -19,7 +19,7 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 
 /**
  * ****************VARIABLES****
- * *****************************
+ * *****************************f
  */
 $ver = '0.6';
 $package_name = 'designssquare-com-theme-cascade';
