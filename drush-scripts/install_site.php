@@ -78,10 +78,16 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 
-$project = 'test_loam';
-$db_name = 'test_loam_db';
-$db_user = 'test_loam';
-$db_password = '38394815';
+//$project = 'test_loam';
+//$db_name = 'test_loam_db';
+//$db_user = 'test_loam';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+$project = 'prod_loam';
+$db_name = 'prod_loam_db';
+$db_user = 'prod_loam';
+$db_password = 'loam2014';
 $debug_mode = TRUE;
 
 ###SLIDER
