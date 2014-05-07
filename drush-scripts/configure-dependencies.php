@@ -10,7 +10,7 @@ $env = drush_get_option('env','test');
 if(!isset($artifact_name) || empty($artifact_name) || empty($artifact_type)){drush_die("Artifact name or type not specified");}
 //$package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
 //$artifact_dir = 'designssquare_com_'.$artifact_name;
-$make_file = '/Users/maxit/Sites/drupal/config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
+$make_file = '../../config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
 $debug = true;
 
 // check if we can bootstrap
