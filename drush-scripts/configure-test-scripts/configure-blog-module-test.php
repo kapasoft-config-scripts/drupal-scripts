@@ -8,7 +8,7 @@ $artifact_name = drush_get_option('artifact-name');
 $artifact_type = drush_get_option('artifact-type','module');
 $env = drush_get_option('env','test');
 if(!isset($artifact_name) || empty($artifact_name) || empty($artifact_type)){drush_die("Artifact name or type not specified");}
-$artifact_dir = 'designssquare_com_'.$artifact_name;
+$artifact_dir = 'designssquare_com_module_'.$artifact_name;
 $make_file = '/Users/maxit/Sites/drupal/config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'-'.$env.'.make';
 $debug = false;
 

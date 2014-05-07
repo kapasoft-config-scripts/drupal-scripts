@@ -186,6 +186,69 @@ function array_orderby()
     return array_pop($args);
 }
 
+/***********Stage ***********/
+/*
+ * param: $dest - the location for custom modules without traling slash
+ */
+function stage_modules($artifact_type, $artifact_name, $dest = NULL, $debug = TRUE){
+
+    $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
+    $git_module_repo = 'https://github.com/kapasoft-drupal-modules/';
+    $module_dest_dir = (isset($dest)) ? $dest.'/' : 'sites/all/modules/';
+
+    //retrieving modules to be included in the build
+    $make_file = '../../config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
+    $build_file_parsed = drupal_parse_info_file($make_file);
+    $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+
+    /*****DEBUG******/
+    if ($debug) {
+        drush_print('make file: '.$make_file);
+        drush_print('Modules to include:');
+        print_r($widget_modules);
+    }
+
+    foreach ($widget_modules as $key => $module) {
+        $widget_name = null;
+        switch($module){
+            case 'designssquare_lib':
+                $repo_name = 'designssquare-utils.git';
+                $source_repo = $git_util_repo.$repo_name;
+                $widget_name = 'designssquare_com_lib';
+                break;
+            case  'designssquare_alias_path':
+                $repo_name = 'designssquare_alias_path.git';
+                $source_repo = $git_util_repo.$repo_name;
+                $widget_name = 'designssquare_lib_alias';
+                break;
+            case  'designssquare_lib_assets':
+                $repo_name = 'designssquare-lib-assets.git';
+                $source_repo = $git_util_repo.$repo_name;
+                $widget_name = 'designssquare_lib_assets';
+                break;
+            default:
+                if($artifact_type == 'theme'){
+                    //installing theme's module
+                    $repo_name = $artifact_name.'.git';
+                    $source_repo = $git_module_repo.$repo_name;
+                    $widget_name = 'designssquare_com_module_'.$artifact_name;
+                }
+                break;
+        }
+
+        if(isset($widget_name)){
+            if(is_dir($module_dest_dir.$widget_name)){
+                drush_print('Removing module '.$widget_name.' before staging...');
+                drush_shell_exec('sudo rm -R '.$module_dest_dir.$widget_name);
+                print_r(drush_shell_exec_output());
+            }
+            drush_print('staging ' . $widget_name . ' module ...'.$source_repo);
+            drush_shell_exec('git clone ' . $source_repo . ' ' . $module_dest_dir . $widget_name);
+            print_r(drush_shell_exec_output());
+        }
+    }
+}
+
 /************Building Dist***********/
 
 function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){

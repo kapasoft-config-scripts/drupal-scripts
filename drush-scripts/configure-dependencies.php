@@ -70,6 +70,8 @@ $all_dependent_modules[] = 'jquery_update';
 //remove widget modules for being enabled
 $dependencies_without_widgets = array_diff($all_dependent_modules, $widget_modules);
 drush_print('ENABLING DEPENDENT MODULES ...');
+
+//enable depencencies
 foreach($dependencies_without_widgets as $key => $dependent_module){
     drush_print('module '. $dependent_module . ((drush_invoke_process("@self", "pm-enable", array($dependent_module)) ? ' WAS ' : ' WAS NOT')) . ' enabled');
 }
