@@ -59,3 +59,4 @@ cad slider module
 cs blog test module
 -or-
 sudo drush ../../config/drush-scripts/configure-$2-scripts/configure-$1-$3-$2.php --env=$2 --artifact-name=$1 --artifact-type=$3
+sudo drush ../../config/drush-scripts/configure-test-scripts/configure-blog-module-test.php --env=test --artifact-name=blog --artifact-type=module

@@ -106,10 +106,10 @@ drush_print('...configured audio player lib to path '.$payer_audio_src);
 
 
 //move sample data files(images, videos, audios) into profile. NOT NEEDED IF FEATURE EXPORT INCLUDES PROFILE IN MODULE
-$blog_profiles_dir = 'sites/all/modules/'.$artifact_dir.'/profiles/';
-drush_print('moving sample data artifacts(i.e images, video files, audio files ...');
-if(!file_exists($blog_profiles_dir)){
-    drush_die("path to blog profiles does not exist: ".$blog_profiles_dir, 0);
-}
-drush_shell_exec('sudo cp -R '.$blog_profiles_dir.' profiles/');
-print_r(drush_shell_exec_output());
+//$blog_profiles_dir = 'sites/all/modules/'.$artifact_dir.'/profiles/';
+//drush_print('moving sample data artifacts(i.e images, video files, audio files ...');
+//if(!file_exists($blog_profiles_dir)){
+//    drush_die("path to blog profiles does not exist: ".$blog_profiles_dir, 0);
+//}
+//drush_shell_exec('sudo cp -R '.$blog_profiles_dir.' profiles/');
+//print_r(drush_shell_exec_output());
