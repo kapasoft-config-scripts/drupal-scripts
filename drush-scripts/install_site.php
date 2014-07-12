@@ -84,16 +84,113 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 
-$project = 'prod_loam';
-$db_name = 'prod_loam_db';
-$db_user = 'prod_loam';
-$db_password = 'loam2014';
-$debug_mode = TRUE;
+//$project = 'prod_loam';
+//$db_name = 'prod_loam_db';
+//$db_user = 'prod_loam';
+//$db_password = 'loam2014';
+//$debug_mode = TRUE;
 
 ###SLIDER
 //$project = 'dev_slider';
 //$db_name = 'dev_slider_db';
 //$db_user = 'dev_slider';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+//$env = 'test';
+//$env = 'test';
+//$project = $env.'_slider';
+//$db_name = $env.'_slider_db';
+//$db_user = $env.'_slider';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+#PORTFOLIO
+//$env = 'dev';
+//$env = 'test';
+//$project = $env.'_portfolio';
+//$db_name = $env.'_portfolio_db';
+//$db_user = $env.'_portfolio';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+
+#PORTFOLIO
+//$env = 'dev';
+//$env = 'test';
+//$project = $env.'_portfolio';
+//$db_name = $env.'_portfolio_db';
+//$db_user = $env.'_portfolio';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###BLOG
+//$project = 'dev_blog';
+//$db_name = 'dev_blog_db';
+//$db_user = 'dev_blog';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+//$project = 'test_blog';
+//$db_name = 'test_blog_db';
+//$db_user = 'test_blog';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+//###Gallery
+//$env = 'dev';
+//$project = $env.'_gallery';
+//$db_name = $env.'_gallery_db';
+//$db_user = $env.'_gallery';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###Newsletter
+//$env = 'dev';
+//$project = $env.'_newsletter';
+//$db_name = $env.'_newsletter_db';
+//$db_user = $env.'_newsletter';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###Podcast
+//$env = 'dev';
+//$project = $env.'_podcast';
+//$db_name = $env.'_podcast_db';
+//$db_user = $env.'_podcast';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###Espresso
+//$project = 'dev_espresso';
+//$db_name = 'dev_espresso_db';
+//$db_user = 'dev_espresso';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+//$env = 'test';
+////$env = 'dev_p';
+////$env = 'test_p';
+//$project = $env.'_espresso';
+//$db_name = $env.'_espresso_db';
+//$db_user = $env.'_espresso';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###CHURCH
+$env = 'test';
+//$env = 'dev';
+$project = $env.'_church';
+$db_name = $env.'_church_db';
+$db_user = $env.'_church';
+$db_password = '38394815';
+$debug_mode = TRUE;
+
+//###CKEDitor
+//$env = 'dev';
+//$project = $env.'_ckeditor';
+//$db_name = $env.'_ckeditor_db';
+//$db_user = $env.'_ckeditor';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 

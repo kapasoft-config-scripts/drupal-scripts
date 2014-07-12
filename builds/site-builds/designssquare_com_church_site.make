@@ -6,27 +6,18 @@ projects[drupal][type] = core
 projects[drupal][version] = 7.26
 
 ;;custom modules
-widget[1][name]= designssquare_com_site_loam_structure
+widget[1][name]= designssquare_com_site_church_configurations_data_structures
 widget[1][order]=5
-widget[2][name]=esignssquare_com_site_loam_data
+widget[2][name]=designssquare_com_site_church_data_assets
 widget[2][order]=6
 widget[3][name]=designssquare_lib
 widget[3][repo]=kapasoft-config-scripts/designssquare-utils
 widget[3][order]=1
-widget[4][name]=designssquare_com_site_loam
+widget[4][name]=designssquare_lib_sample_data
 widget[4][order]=7
-widget[5][name]=designssquare_com_themes_builder_structure
-widget[5][order]=4
-widget[7][repo]=kapasoft-config-scripts/designssquare_alias_path
-widget[7][name]=designssquare_alias_path
-widget[7][order]=3
-widget[10][repo]=kapasoft-config-scripts/designssquare-lib-assets
-widget[10][order]=10
-widget[10][name]=designssquare_lib_assets
-widget[8][name]=designssquare_com_site_loam_menu
-widget[8][order]=8
-widget[9][name]=designssquare_com_site_loam_menu_footer
-widget[9][order]=9
+widget[5][name]=designssquare_com_site_church
+widget[5][order]=8
+
 
 
 ;;themes

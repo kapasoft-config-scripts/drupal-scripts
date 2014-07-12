@@ -15,7 +15,12 @@ $debug = true;
 $git_mod_repo = 'https://github.com/kapasoft-drupal-'.$artifact_type.'s/'.$artifact_name.'.git';
 $git_util_repo = 'https://github.com/kapasoft-config-scripts/designssquare-utils.git';
 
-$full_package_name = $package_name.'-'.$ver;
+$minimized = drush_get_option('min','no');
+if($minimized == 'yes'){
+    $full_package_name = $package_name.'-'.$ver.'-min';
+}else{
+    $full_package_name = $package_name.'-'.$ver;
+}
 $dest_dir = $dist_dir.$artifact_type.'s/'.$widget_name;
 $dest = $dest_dir.'/'.$full_package_name;
 if(file_exists($dest)){
@@ -34,7 +39,9 @@ drush_shell_exec('git clone '.$git_mod_repo.' '.$widget_dist_dest);
 print_r(drush_shell_exec_output());
 
 //build modules
-build_modules($artifact_type, $artifact_name, $dest, $debug);
+if($minimized !== "yes"){
+   build_modules($artifact_type, $artifact_name, $dest, $debug);
+}
 ////build designssqure common module
 //$ds_lib_included = drush_get_option('ds-lib', 'no');
 //if($ds_lib_included == 'yes'){
@@ -46,9 +53,11 @@ build_modules($artifact_type, $artifact_name, $dest, $debug);
 //}
 
 //copy documenation
-drush_print('copying documentation ....'.$dest.'/index.html from '.$widget_dist_dest.'/docs/index.html');
-drush_shell_exec('sudo sudo cp '.$widget_dist_dest.'/docs/index.html '.$dest.'/index.html');
-print_r(drush_shell_exec_output());
+_copy_documentation($widget_dist_dest, $dest);
+
+//drush_print('copying documentation ....'.$dest.'/index.html from '.$widget_dist_dest.'/docs/index.html');
+//drush_shell_exec('sudo sudo cp '.$widget_dist_dest.'/docs/index.html '.$dest.'/index.html');
+//print_r(drush_shell_exec_output());
 
 //remove git files "sudo rm -rf .git"
 drush_print('removing git repo info ....sudo rm -rf '.$dest.'/*/*/.git ');
@@ -61,6 +70,10 @@ drush_print('compresssing package....');
 drush_shell_exec('tar -czf '.$dest.'.tar.gz -C '.$dest_dir.' '.$full_package_name);
 print_r(drush_shell_exec_output());
 
-
+//create zip file
+drush_print('ziping package....');
+//to avoid full path, we go to distribution. this can be improved
+drush_op('chdir', $dest_dir);
+drush_shell_exec('zip -r ' . $full_package_name . '.zip ' . $full_package_name);
 
 drush_print('Done building '.$package_name.' ver-'.$ver);

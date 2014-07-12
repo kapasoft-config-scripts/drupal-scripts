@@ -4,8 +4,6 @@
 ini_set('error_reporting', E_ALL);
 require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
 
-
-
 $artifact_name = drush_get_option('artifact-name','blog');
 $artifact_type = drush_get_option('artifact-type','module');
 $widget_name = 'designssquare_com_'.$artifact_type.'_'.$artifact_name;

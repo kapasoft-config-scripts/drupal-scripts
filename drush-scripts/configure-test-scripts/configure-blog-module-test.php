@@ -83,8 +83,27 @@ if(!file_exists('sites/all/libraries')){
 }
 $payer_src = '../modules/'.$artifact_dir.'/libraries/video-js';
 drush_print('linking player '.$player_dest.' to path '.$payer_src);
-//sudo ln -s ../modules/designssquare_com_blog/libraries/video-js sites/all/libraries/video-js
 (symlink($payer_src, $player_dest)) ? 'linking widget named '.$player_dest.' to path '.$payer_src : "***ERROR: didn't limked to".$payer_src;
+
+//Link CKeditor
+drush_print('Linking CKeditor library....');
+$editor_dest = 'sites/all/libraries/ckeditor';
+if(!file_exists('sites/all/libraries')){
+    drush_print('sites/all/libraries directory does not exist...creating one');
+    drush_shell_exec('sudo mkdir sites/all/libraries');
+    print_r(drush_shell_exec_output());
+}
+
+if(file_exists('sites/all/libraries/ckeditor')){
+    drush_print('sites/all/libraries/ckeditor directory already exist...removing');
+    drush_shell_exec('sudo rm -R sites/all/libraries/ckeditor');
+    print_r(drush_shell_exec_output());
+}
+
+$editor_src = '../modules/'.$artifact_dir.'/libraries/ckeditor';
+drush_print('linking ckeditor '.$editor_dest.' to path '.$editor_src);
+(symlink($editor_src, $editor_dest)) ? 'linking widget named '.$editor_dest.' to path '.$editor_src : "***ERROR: didn't limked to".$editor_src;
+
 
 //configure audio
 variable_set('audiofield_audioplayer', "wpaudioplayer");

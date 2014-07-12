@@ -23,6 +23,11 @@ $modules_to_enable = array_diff($build_file_parsed['projects'],array('drupal'));
 $modules_enabled = drush_invoke_process("@self", "pm-enable", $modules_to_enable);
 drush_print('Modules ' . (($modules_enabled) ? 'WAS' : 'WAS NOT' ). '  Enabled');
 
+
+#ToDo Enable Fe Block(fe_block_settings)
+#ToDo Enable Contact(contact)
+#ToDo Enable admin_menu
+
 # Pre configure settings
 ##########################################################
 # disable user pictures

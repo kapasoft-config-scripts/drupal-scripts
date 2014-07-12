@@ -1,6 +1,6 @@
 #!/usr/bin/env drush
 <?php
-require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
+require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
 // Same as error_reporting(E_ALL);
 ini_set('error_reporting', E_ALL);
 

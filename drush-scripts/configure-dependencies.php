@@ -70,8 +70,35 @@ $all_dependent_modules[] = 'jquery_update';
 //remove widget modules for being enabled
 $dependencies_without_widgets = array_diff($all_dependent_modules, $widget_modules);
 drush_print('ENABLING DEPENDENT MODULES ...');
+//print_r($dependencies_without_widgets);
 
-//enable depencencies
-foreach($dependencies_without_widgets as $key => $dependent_module){
+
+//retrieving inactive dependencies
+//$currently_disabled = drush_invoke_process("@self", "pm-list",array(), array('pipe'=>'yes','no-core'=>'yes','type' =>'module', 'status' => 'Disabled')) ? : array();
+//$currently_uninstalled = drush_invoke_process("@self", "pm-list",array(), array('pipe'=>'yes','no-core'=>'yes','type' =>'module', 'status' => 'Not installed')) ? : array();
+//$cur_disabled= empty($currently_disabled['object']) ? array() : $currently_disabled['object'];
+//$cur_uninstalled = empty($currently_uninstalled['object']) ? array() : $currently_uninstalled['object'];
+//$inactive_dependencies = array_merge(array_keys($cur_disabled), array_keys($cur_uninstalled));
+//$depenencies_not_enabled = array_intersect($dependencies_without_widgets, $inactive_dependencies);
+
+
+//make only the ones disabled or uninstalled to be enabled
+$currently_enabled = drush_invoke_process("@self", "pm-list",array(), array('pipe'=>'yes','type' =>'module', 'status' => 'Enabled')) ? : array();
+$cur_enabled = empty($currently_enabled['object']) ? array() : array_keys($currently_enabled['object']);
+$all_not_enabled = array_diff($all_dependent_modules, $cur_enabled);
+//$depenencies_not_enabled = array_intersect(array_values($all_not_enabled), array_values($all_dependent_modules));
+$depenencies_not_enabled = array_intersect($all_not_enabled, $all_dependent_modules);
+
+if($debug){
+    drush_print('Cur Enabled');
+    print_r($cur_enabled);
+    drush_print('All Not Enabled');
+    print_r($all_not_enabled);
+    drush_print('Currently Inactive From Dependencies');
+    print_r($depenencies_not_enabled);
+}
+
+//enable inactive depencencies
+foreach($depenencies_not_enabled as $key => $dependent_module){
     drush_print('module '. $dependent_module . ((drush_invoke_process("@self", "pm-enable", array($dependent_module)) ? ' WAS ' : ' WAS NOT')) . ' enabled');
 }

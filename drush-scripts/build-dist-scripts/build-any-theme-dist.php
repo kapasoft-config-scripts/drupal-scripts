@@ -6,9 +6,14 @@ ini_set('error_reporting', E_ALL);
 
 $artifact_name = drush_get_option('artifact-name', 'blog');
 $artifact_type = drush_get_option('artifact-type', 'module');
+$plus_package = drush_get_option('plus', 'no');
 $widget_name = 'designssquare_com_' . $artifact_type . '_' . $artifact_name;
 $ver = drush_get_option('ver', '0.1');
-$package_name = 'designssquare-com-' . $artifact_type . '-' . $artifact_name;
+if($plus_package == 'no'){
+    $package_name = 'designssquare-com-' . $artifact_type . '-' . $artifact_name;
+}else{
+    $package_name = 'designssquare-com-' . $artifact_type . '-' . $artifact_name . '-' . 'plus';
+}
 $dist_dir = '/Users/maxit/Sites/drupal/dist/';
 $debug = true;
 //@ToDo Fix ssh keys with drush to avoid prompt
@@ -34,6 +39,7 @@ if (file_exists($dest)) {
     print_r(drush_shell_exec_output());
 }
 
+//build dependent modules
 build_modules($artifact_type, $artifact_name, $dest, $debug);
 
 ////retrieving modules to be included in the build
@@ -74,10 +80,14 @@ build_modules($artifact_type, $artifact_name, $dest, $debug);
 //}
 
 
-//build modules
+//build main module
 $widget_dist_dest = $dest . '/modules/' . $widget_name;
 drush_print('building ' . $widget_name . ' module ...kapasoft-drupal-modules');
-drush_shell_exec('git clone ' . $git_mod_repo . ' ' . $widget_dist_dest);
+if($plus_package == 'yes'){
+    drush_shell_exec('git clone -b plus ' . $git_mod_repo . ' ' . $widget_dist_dest);
+}else{
+    drush_shell_exec('git clone ' . $git_mod_repo . ' ' . $widget_dist_dest);
+}
 print_r(drush_shell_exec_output());
 
 //build designssqure common module
@@ -92,11 +102,14 @@ print_r(drush_shell_exec_output());
 
 //@ToDo make this as choice since all themes don't need bootstrap
 //build base theme
-$widget_name = 'bootstrap';
-$widget_dist_base_dest = $dest . '/themes/' . $widget_name;
-drush_print('building ' . $widget_name . ' theme ...');
-drush_shell_exec('git clone ' . $git_theme_base_repo . ' ' . $widget_dist_base_dest);
-print_r(drush_shell_exec_output());
+$ds_lib_included = drush_get_option('base-theme', 'no');
+if ($ds_lib_included == 'yes') {
+    $widget_name = 'bootstrap';
+    $widget_dist_base_dest = $dest . '/themes/' . $widget_name;
+    drush_print('building ' . $widget_name . ' theme ...');
+    drush_shell_exec('git clone ' . $git_theme_base_repo . ' ' . $widget_dist_base_dest);
+    print_r(drush_shell_exec_output());
+}
 
 //build  theme
 $widget_name = $artifact_name;
@@ -107,11 +120,12 @@ print_r(drush_shell_exec_output());
 
 
 //copy documentation
-drush_print('copying documentation ....' . $dest . '/docs/* from ' . $widget_dist_custom_dest . '/docs/*');
-drush_shell_exec('sudo mkdir ' . $dest . '/docs/');
-print_r(drush_shell_exec_output());
-drush_shell_exec('sudo sudo cp -R ' . $widget_dist_custom_dest . '/docs/* ' . $dest . '/docs/');
-print_r(drush_shell_exec_output());
+//drush_print('copying documentation ....' . $dest . '/docs/* from ' . $widget_dist_custom_dest . '/docs/*');
+//drush_shell_exec('sudo mkdir ' . $dest . '/docs/');
+//print_r(drush_shell_exec_output());
+//drush_shell_exec('sudo sudo cp -R ' . $widget_dist_custom_dest . '/docs/* ' . $dest . '/docs/');
+//print_r(drush_shell_exec_output());
+_copy_documentation($widget_dist_custom_dest, $dest);
 
 //remove git files "sudo rm -rf .git"
 drush_print('removing git repo info ....sudo rm -rf ' . $dest . '/*/*/.git ');

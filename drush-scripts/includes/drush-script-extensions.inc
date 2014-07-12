@@ -253,9 +253,15 @@ function stage_modules($artifact_type, $artifact_name, $dest = NULL, $debug = TR
 
 function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){
     $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
-
+    $git_module_repo = 'https://github.com/kapasoft-drupal-modules/';
     //retrieving modules to be included in the build
-    $make_file = $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
+    $plus_package = drush_get_option('plus', 'no');
+    if($plus_package == 'no'){
+        $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
+    }else{
+        $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '_plus' . '.make';
+    }
+    drush_print('****make-file: '.$make_file);
     $build_file_parsed = drupal_parse_info_file($make_file);
     $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
 
@@ -276,18 +282,105 @@ function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){
                 break;
             case  'designssquare_alias_path':
                 $widget_dependency_name = 'designssquare_alias_path';
-                $widget_dist_dest_lib = $dest . '/modules/designssquare_lib_alias';
+                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib_alias';
                 drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
                 drush_shell_exec('git clone ' . $git_util_repo.$widget_dependency_name.'.git' . ' ' . $widget_dist_dest_lib);
                 print_r(drush_shell_exec_output());
                 break;
             case  'designssquare_lib_assets':
-                $widget_dependency_name = 'designssquare_lib_assets';
+                $widget_dependency_name = 'designssquare_com_lib_assets';
                 $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
                 drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
                 drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-assets.git' . ' ' . $widget_dist_dest_lib);
                 print_r(drush_shell_exec_output());
                 break;
+            case  'designssquare_lib_feature_assets':
+                $widget_dependency_name = 'designssquare_com_lib_feature_assets';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-feature-assets.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_utils_ckeditor':
+                $widget_dependency_name = 'designssquare_com_utils_ckeditor';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils-ckeditor.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_lib_sample_data':
+                $widget_dependency_name = 'designssquare_com_lib_sample_data';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-sample-data.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_theme_blocks':
+                $widget_dependency_name = 'designssquare_com_theme_blocks';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
+            case  'designssquare_theme_blocks_plus':
+                $widget_dependency_name = 'designssquare_com_theme_blocks_plus';
+                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+                drush_shell_exec('git clone -b plus ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
+                print_r(drush_shell_exec_output());
+                break;
         }
     }
+}
+
+function _copy_documentation($src, $dest){
+    drush_print('copying documentation ....' . $dest . '/docs/* from ' . $src . '/docs/*');
+    drush_shell_exec('sudo mkdir ' . $dest . '/docs/');
+    print_r(drush_shell_exec_output());
+    drush_shell_exec('sudo sudo cp -R ' . $src . '/docs/* ' . $dest . '/docs/');
+    print_r(drush_shell_exec_output());
+}
+
+/**********Configure*********/
+
+function configure_ckeditor($module_name = 'designssquare_com_ckeditor'){
+    $artifact_dir = drupal_get_path('module', $module_name);
+    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
+//    drush_print("dir_name:".$artifact_dir_name);
+
+//Link CKeditor
+    drush_print('Linking CKeditor library....');
+    $editor_dest = 'sites/all/libraries/ckeditor';
+    if(!file_exists('sites/all/libraries')){
+        drush_print('sites/all/libraries directory does not exist...creating one');
+        drush_shell_exec('sudo mkdir sites/all/libraries');
+        print_r(drush_shell_exec_output());
+    }
+
+    if(file_exists('sites/all/libraries/ckeditor')){
+        drush_print('sites/all/libraries/ckeditor directory already exist...removing');
+        drush_shell_exec('sudo rm -R sites/all/libraries/ckeditor');
+        print_r(drush_shell_exec_output());
+    }
+    $editor_src = '../modules/'.$artifact_dir_name.'/libraries/ckeditor';
+//$editor_src = $artifact_dir.'/libraries/ckeditor';
+    drush_print('linking ckeditor '.$editor_dest.' to path '.$editor_src);
+    (symlink($editor_src, $editor_dest)) ? 'linking widget named '.$editor_dest.' to path '.$editor_src : "***ERROR: didn't limked to".$editor_src;
+
+}
+
+
+function configure_audio($module_name){
+    $artifact_dir = drupal_get_path('module', $module_name);
+    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
+
+    //configure audio
+    variable_set('audiofield_audioplayer', "wpaudioplayer");
+    $payer_audio_src = "sites/all/modules/$artifact_dir_name/libraries/player";
+    if(!file_exists($payer_audio_src)){
+        drush_die("path to audo player lib does not exist: ".$payer_audio_src, 0);
+    }
+    variable_set('audiofield_players_dir', $payer_audio_src);
+    drush_print('...configured audio player lib to path '.$payer_audio_src);
+
 }

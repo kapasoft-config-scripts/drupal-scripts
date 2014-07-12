@@ -3,15 +3,14 @@
 si slider build-drupal-dev-site.make
 
 ###Build theme
-bt bazar 0.4.5 theme
+daa bazar 0.4.6 theme
+cs bazar test theme
 
 ##build package
 bda slider 0.7 module yes
 
-##build slider for Test
-bta slider 0.7 module
-
-
+##deploy slider for Test
+daa slider 0.10 module
 
 #configure
 cad slider module dev
