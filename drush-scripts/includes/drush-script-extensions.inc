@@ -384,3 +384,34 @@ function configure_audio($module_name){
     drush_print('...configured audio player lib to path '.$payer_audio_src);
 
 }
+
+//retrieve the name of widget
+function get_widget_name($name,$type){
+
+    $artifact_name = 'designssquare_com_'.$type.'_'.$name;
+    return $artifact_name;
+//    switch($name){
+//
+//    }
+}
+
+function get_repo($name,$type){
+    $repo_name = '';
+
+    switch($type){
+        case 'widget':
+        case 'module':
+        $repo_name = 'https://github.com/kapasoft-drupal-modules/'.$name.'.git';
+           break;
+        case 'theme':
+            $repo_name = 'https://github.com/kapasoft-drupal-themes/'.$name.'.git';
+            break;
+        case 'site':
+            $repo_name = 'https://github.com/kapasoft-drupal-site-modules/'.$name.'.git';
+            break;
+        default:
+            $repo_name = 'https://github.com/kapasoft-config-scripts/'.$name.'.git';
+            break;
+    }
+    return $repo_name;
+}
