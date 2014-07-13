@@ -7,11 +7,14 @@ ini_set('error_reporting', E_ALL);
 $artifact_name = drush_get_option('artifact-name');
 $artifact_type = drush_get_option('artifact-type','module');
 $env = drush_get_option('env','test');
-if(!isset($artifact_name) || empty($artifact_name) || empty($artifact_type)){drush_die("Artifact name or type not specified");}
+//constraints
+if(!isset($artifact_name) || empty($artifact_name)){drush_die("Artifact name not specified");}
 //$package_name = 'designssquare-com-'.$artifact_type.'-'.$artifact_name;
 //$artifact_dir = 'designssquare_com_'.$artifact_name;
-$make_file = '../../config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
-$debug = true;
+//$make_file = '../../config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
+$make_file = get_make_file($artifact_name, $artifact_type);
+drush_print('****makefile: '.$make_file);
+$debug = false;
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');
@@ -50,6 +53,9 @@ if($debug){
     print_r($dependency_status);
     drush_print('All Dependent MODULES');
     print_r($all_dependent_modules);
+}else{
+    drush_print('Widget Modules:');
+    print_r($widget_modules);
 }
 
 
@@ -85,7 +91,7 @@ drush_print('ENABLING DEPENDENT MODULES ...');
 //make only the ones disabled or uninstalled to be enabled
 $currently_enabled = drush_invoke_process("@self", "pm-list",array(), array('pipe'=>'yes','type' =>'module', 'status' => 'Enabled')) ? : array();
 $cur_enabled = empty($currently_enabled['object']) ? array() : array_keys($currently_enabled['object']);
-$all_not_enabled = array_diff($all_dependent_modules, $cur_enabled);
+$all_not_enabled = array_diff($dependencies_without_widgets, $cur_enabled);
 //$depenencies_not_enabled = array_intersect(array_values($all_not_enabled), array_values($all_dependent_modules));
 $depenencies_not_enabled = array_intersect($all_not_enabled, $all_dependent_modules);
 
@@ -94,6 +100,9 @@ if($debug){
     print_r($cur_enabled);
     drush_print('All Not Enabled');
     print_r($all_not_enabled);
+    drush_print('Currently Inactive From Dependencies');
+    print_r($depenencies_not_enabled);
+}else{
     drush_print('Currently Inactive From Dependencies');
     print_r($depenencies_not_enabled);
 }

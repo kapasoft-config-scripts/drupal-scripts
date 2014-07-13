@@ -255,12 +255,7 @@ function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){
     $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
     $git_module_repo = 'https://github.com/kapasoft-drupal-modules/';
     //retrieving modules to be included in the build
-    $plus_package = drush_get_option('plus', 'no');
-    if($plus_package == 'no'){
-        $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
-    }else{
-        $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '_plus' . '.make';
-    }
+    $make_file = get_make_file($artifact_name,$artifact_type, 'dev');
     drush_print('****make-file: '.$make_file);
     $build_file_parsed = drupal_parse_info_file($make_file);
     $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
@@ -272,64 +267,71 @@ function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE){
     }
 
     foreach ($widget_modules as $key => $module) {
-        switch($module){
-            case 'designssquare_lib':
-                $widget_dependency_name = 'designssquare_lib';
-                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib';
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_alias_path':
-                $widget_dependency_name = 'designssquare_alias_path';
-                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib_alias';
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.$widget_dependency_name.'.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_lib_assets':
-                $widget_dependency_name = 'designssquare_com_lib_assets';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-assets.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_lib_feature_assets':
-                $widget_dependency_name = 'designssquare_com_lib_feature_assets';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-feature-assets.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_utils_ckeditor':
-                $widget_dependency_name = 'designssquare_com_utils_ckeditor';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils-ckeditor.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_lib_sample_data':
-                $widget_dependency_name = 'designssquare_com_lib_sample_data';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-sample-data.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_theme_blocks':
-                $widget_dependency_name = 'designssquare_com_theme_blocks';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-            case  'designssquare_theme_blocks_plus':
-                $widget_dependency_name = 'designssquare_com_theme_blocks_plus';
-                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
-                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
-                drush_shell_exec('git clone -b plus ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
-                print_r(drush_shell_exec_output());
-                break;
-        }
+
+        $artifact_ins = get_artifact_by_name($module);
+        $widget_dependency_name = $artifact_ins['name'];
+        $widget_dist_dest_lib = $dest . '/modules/'.$artifact_ins['final_name'];
+        drush_print('building ' . $widget_dependency_name . ' module ...'.$artifact_ins['repo_name']);
+        drush_shell_exec('git clone -b ' . $artifact_ins['branch'] . ' ' . $artifact_ins['repo'] . $artifact_ins['repo_name'] . '.git ' . $widget_dist_dest_lib);
+        print_r(drush_shell_exec_output());
+//        switch($module){
+//            case 'designssquare_lib':
+//                $widget_dependency_name = 'designssquare_lib';
+//                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib';
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_alias_path':
+//                $widget_dependency_name = 'designssquare_alias_path';
+//                $widget_dist_dest_lib = $dest . '/modules/designssquare_com_lib_alias';
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.$widget_dependency_name.'.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_lib_assets':
+//                $widget_dependency_name = 'designssquare_com_lib_assets';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-assets.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_lib_feature_assets':
+//                $widget_dependency_name = 'designssquare_com_lib_feature_assets';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-feature-assets.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_utils_ckeditor':
+//                $widget_dependency_name = 'designssquare_com_utils_ckeditor';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-utils-ckeditor.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_lib_sample_data':
+//                $widget_dependency_name = 'designssquare_com_lib_sample_data';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_util_repo.'designssquare-lib-sample-data.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_theme_blocks':
+//                $widget_dependency_name = 'designssquare_com_theme_blocks';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//            case  'designssquare_theme_blocks_plus':
+//                $widget_dependency_name = 'designssquare_com_theme_blocks_plus';
+//                $widget_dist_dest_lib = $dest . '/modules/'.$widget_dependency_name;
+//                drush_print('building ' . $widget_dependency_name . ' module ...kapasoft-config-scripts');
+//                drush_shell_exec('git clone -b plus ' . $git_module_repo.'designssquare_com_theme_blocks.git' . ' ' . $widget_dist_dest_lib);
+//                print_r(drush_shell_exec_output());
+//                break;
+//        }
     }
 }
 
@@ -344,8 +346,9 @@ function _copy_documentation($src, $dest){
 /**********Configure*********/
 
 function configure_ckeditor($module_name = 'designssquare_com_ckeditor'){
-    $artifact_dir = drupal_get_path('module', $module_name);
-    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
+//    $artifact_dir = drupal_get_path('module', $module_name);
+//    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
+    $artifact = get_artifact_by_name($module_name);
 //    drush_print("dir_name:".$artifact_dir_name);
 
 //Link CKeditor
@@ -362,7 +365,7 @@ function configure_ckeditor($module_name = 'designssquare_com_ckeditor'){
         drush_shell_exec('sudo rm -R sites/all/libraries/ckeditor');
         print_r(drush_shell_exec_output());
     }
-    $editor_src = '../modules/'.$artifact_dir_name.'/libraries/ckeditor';
+    $editor_src = '../modules/'.$artifact['final_name'].'/libraries/ckeditor';
 //$editor_src = $artifact_dir.'/libraries/ckeditor';
     drush_print('linking ckeditor '.$editor_dest.' to path '.$editor_src);
     (symlink($editor_src, $editor_dest)) ? 'linking widget named '.$editor_dest.' to path '.$editor_src : "***ERROR: didn't limked to".$editor_src;
@@ -371,12 +374,12 @@ function configure_ckeditor($module_name = 'designssquare_com_ckeditor'){
 
 
 function configure_audio($module_name){
-    $artifact_dir = drupal_get_path('module', $module_name);
-    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
-
+//    $artifact_dir = drupal_get_path('module', $module_name);
+//    $artifact_dir_name = array_pop(explode( "/", $artifact_dir));
+    $artifact = get_artifact_by_name($module_name);
     //configure audio
     variable_set('audiofield_audioplayer', "wpaudioplayer");
-    $payer_audio_src = "sites/all/modules/$artifact_dir_name/libraries/player";
+    $payer_audio_src = "sites/all/modules/" . $artifact['final_name'] . "/libraries/player";
     if(!file_exists($payer_audio_src)){
         drush_die("path to audo player lib does not exist: ".$payer_audio_src, 0);
     }
@@ -386,32 +389,281 @@ function configure_audio($module_name){
 }
 
 //retrieve the name of widget
-function get_widget_name($name,$type){
-
-    $artifact_name = 'designssquare_com_'.$type.'_'.$name;
+function get_widget_name($name, $type){
+    $artifact = get_artifact_by_name($name);
+    if(!empty($artifact['name']) ){
+        $artifact_name = $artifact['final_name'];
+    }else{
+        $artifact_name = 'designssquare_com_'.$type.'_'.$name;
+    }
     return $artifact_name;
-//    switch($name){
-//
-//    }
 }
 
 function get_repo($name,$type){
     $repo_name = '';
-
+    $repo_list = get_repos();
     switch($type){
         case 'widget':
         case 'module':
-        $repo_name = 'https://github.com/kapasoft-drupal-modules/'.$name.'.git';
+        $repo_name = $repo_list['module'].$name.'.git';
            break;
         case 'theme':
-            $repo_name = 'https://github.com/kapasoft-drupal-themes/'.$name.'.git';
+            $repo_name = $repo_list['theme'].$name.'.git';
             break;
         case 'site':
-            $repo_name = 'https://github.com/kapasoft-drupal-site-modules/'.$name.'.git';
+            $repo_name = $repo_list['site'].$name.'.git';
             break;
         default:
-            $repo_name = 'https://github.com/kapasoft-config-scripts/'.$name.'.git';
+            $repo_name = $repo_list['utils'].$name.'.git';
             break;
     }
     return $repo_name;
 }
+
+function all_themes_from_package($name, $type){
+    //add the main theme
+    $themes = array();
+
+    //add dependent themes
+        //read make file
+        //retrieving modules to be included in the build
+        $make_file = get_make_file($name, $type);
+//        drush_print('****make-file: '.$make_file);
+        if(!file_exists($make_file)){
+            drush_die('make file - ' . $make_file . ' does not exist');
+        }
+        $build_file_parsed = drupal_parse_info_file($make_file);
+//        drush_print('***parsed_make: ');
+//        print_r($build_file_parsed);
+        $themes_configured = _array_column(array_orderby($build_file_parsed['theme'], 'order', SORT_ASC), "name");
+
+        //clean out dependencies part of the widget and doesn't need to be build
+        foreach($themes_configured as $key => $m_name){
+            $art = get_artifact_by_name($m_name);
+            if(!empty($art['name'])){
+                $themes[] = $m_name;
+            }
+        }
+
+
+    return $themes;
+}
+
+function all_widget_modules($name, $type){
+    $min = drush_get_option('min-ver','no');
+    $is_min = ($min == 'yes') ? true : false;
+    $widget_modules = array();
+
+    if(!$is_min){
+        //add dependencies
+
+        //read make file
+        //retrieving modules to be included in the build
+        $make_file = get_make_file($name, $type);
+        if(!file_exists($make_file)){
+            drush_die('make file - ' . $make_file . ' does not exist');
+        }
+        $build_file_parsed = drupal_parse_info_file($make_file);
+        $widget_modules_configured = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+
+        //clean out dependencies part of the widget and doesn't need to be build
+        foreach($widget_modules_configured as $key => $m_name){
+            $art = get_artifact_by_name($m_name);
+            if(!empty($art['name'])){
+                $widget_modules[] = $m_name;
+            }
+        }
+    }else{
+        //add the main module
+        $widget_modules[] = $name;
+    }
+
+    drush_print('widget_modules');
+    print_r($widget_modules);
+    return $widget_modules;
+}
+
+function get_make_file($name, $type){
+    $plus_package_option = drush_get_option('plus', FALSE);
+    $plus_package = ($plus_package_option && $plus_package_option =='yes') ? 'yes' : 'no';
+    $config = get_config();
+    if($plus_package == 'no'){
+        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '.make';
+    }else{
+        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '_plus' . '.make';
+    }
+
+    return $make_file;
+}
+
+function get_config(){
+    $config = array();
+    //@ToDo getenv() not working
+//    $config['root'] = getenv('WIDGET_BUILD_ROOT');
+    $config['root'] = '/Users/maxit/Sites/drupal/config';
+//    $var = drush_shell_exec('echo $WIDGET_BUILD_ROOT');
+//    print_r(drush_shell_exec_output());
+//    print_r(getenv('SERVER_NAME'));
+//    drush_print('***path: '.$var);
+//    drush_print('WIDGET_BUILD_ROOT:'.$config['root']);
+    return $config;
+}
+
+function remove_cur_artifact($name, $type){
+    $root = getcwd();
+    $artifact = get_artifact_by_name($name);
+    $dest_dir = $root.'/sites/all/' . $type . 's/'.$artifact['final_name'];
+    if(file_exists($dest_dir)){
+        drush_print('deleting existing ' . $type . ': '.$name.'....');
+        drush_shell_exec('sudo rm -R '.$dest_dir);
+        print_r(drush_shell_exec_output());
+    }
+}
+
+function get_artifact_by_name($name){
+    $list_of_repos = get_repos();
+    $artifact = array();
+    $artifact['name'] = '';
+    $artifact['repo'] = '';
+    $artifact['repo_name'] = '';
+    $artifact['final_name'] = '';
+    $artifact['branch'] = 'master';
+
+    switch($name){
+        case 'designssquare_lib':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-utils';
+            $artifact['final_name'] = 'designssquare_com_lib';
+            break;
+        case  'designssquare_alias_path':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare_alias_path';
+            $artifact['final_name'] = 'designssquare_com_lib_alias';
+            break;
+        case  'designssquare_lib_assets':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-lib-assets';
+            $artifact['final_name'] = 'designssquare_com_lib_assets';
+            break;
+        case  'designssquare_lib_feature_assets':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-lib-feature-assets';
+            $artifact['final_name'] = 'designssquare_com_lib_feature_assets';
+            break;
+        case  'designssquare_utils_ckeditor':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-utils-ckeditor';
+            $artifact['final_name'] = 'designssquare_com_utils_ckeditor';
+            break;
+        case  'designssquare_lib_sample_data':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-lib-sample-data';
+            $artifact['final_name'] = 'designssquare_com_lib_sample_data';
+            break;
+        case  'designssquare_theme_blocks':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'designssquare_com_theme_blocks';
+            $artifact['final_name'] = 'designssquare_com_theme_blocks';
+            break;
+        case  'designssquare_theme_blocks_plus':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'designssquare_com_theme_blocks';
+            $artifact['final_name'] = 'designssquare_com_theme_blocks_plus';
+            $artifact['branch'] = 'plus';
+            break;
+        case  'blog':
+        case  'designssquare_com_blog':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'blog';
+            $artifact['final_name'] = 'designssquare_com_widget_blog';
+            break;
+        case  'ckeditor':
+        case  'designssquare_com_ckeditor':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['utils'];
+            $artifact['repo_name'] = 'designssquare-utils-ckeditor';
+            $artifact['final_name'] = 'designssquare_com_utils_ckeditor';
+            break;
+        case 'commerce':
+     case  'designssquare_com_commerce':
+         $artifact['name'] = $name;
+         $artifact['repo'] = $list_of_repos['module'];
+         $artifact['repo_name'] = 'commerce';
+         $artifact['final_name'] = 'designssquare_com_widget_commerce';
+         break;
+        case 'gallery':
+        case  'designssquare_com_widget_gallery':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'gallery';
+            $artifact['final_name'] = 'designssquare_com_widget_gallery';
+            break;
+        case 'slider':
+        case  'designssquare_com_slider':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'slider';
+            $artifact['final_name'] = 'designssquare_com_widget_slider';
+            break;
+        case 'newsletter':
+        case  'designssquare_com_widget_newsletter':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'newsletter';
+            $artifact['final_name'] = 'designssquare_com_widget_newsletter';
+            break;
+        case 'podcast':
+        case  'designssquare_com_widget_podcast':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'podcast';
+            $artifact['final_name'] = 'designssquare_com_widget_podcast';
+            break;
+        case 'portfolio':
+        case  'designssquare_com_widget_portfolio':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'portfolio';
+            $artifact['final_name'] = 'designssquare_com_widget_portfolio';
+            break;
+        case  'espresso':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['theme'];
+            $artifact['repo_name'] = 'espresso';
+            $artifact['final_name'] = 'espresso';
+            break;
+        case  'espresso_theme':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'espresso';
+            $artifact['final_name'] = 'desigssquare_com_theme_espresso';
+            break;
+        case  'bootstrap':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['theme'];
+            $artifact['repo_name'] = 'bootstrap';
+            $artifact['final_name'] = 'bootstrap';
+            break;
+    }
+
+    return $artifact;
+}
+
+function get_repos(){
+    $repo_list = array();
+    $repo_list['module'] = 'https://github.com/kapasoft-drupal-modules/';
+    $repo_list['theme'] = 'https://github.com/kapasoft-drupal-themes/';
+    $repo_list['site'] = 'https://github.com/kapasoft-drupal-site-modules/';
+    $repo_list['utils'] = 'https://github.com/kapasoft-config-scripts/';
+    return $repo_list;
+}
+

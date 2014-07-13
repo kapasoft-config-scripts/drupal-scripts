@@ -2,6 +2,8 @@
 <?php
 // Same as error_reporting(E_ALL);
 ini_set('error_reporting', E_ALL);
+require_once  '../../config/drush-scripts/includes/drush-script-extensions.inc';
+
 
 //$test_dir_name = drush_get_option('test-dir-name');
 $name = drush_get_option('artifact-name','blog');
@@ -28,35 +30,46 @@ if($min == 'yes'){
     $dist_package = $dist_dir.$type.'s/'.$artifact_name.'/'.$package_name.'-'.$ver;
 }
 
-/****MODULE****/
-//@ToDo read from .make file for all modules for the Widget to loop through
-//building modules
-drush_print('building '.$type.'s ...sudo cp -Rv '.$dist_package.'/'.$type.'s/ '.$test_artifact_dir.'/sites/all/'.$type.'s/');
+// check if we can bootstrap
+$self = drush_sitealias_get_record('@self');
+if (empty($self)) {
+    drush_die("I can't bootstrap from the current location.", 0);
+}
 
+//let's jump to our site directory before we do anything else
+drush_op('chdir', $self['root']);
+
+
+/****MODULE****/
 //delete existing code
 if ($env == 'dev' && $handle = opendir($dist_package.'/modules/')) {
     while (false !== ($module = readdir($handle))) {
 
         if($module !== '.' && $module !== '..'){
-            drush_print('deleting existing module:'.$module.'....');
-            drush_shell_exec('sudo rm -R '.$test_artifact_dir.'/sites/all/modules/'.$module);
-            print_r(drush_shell_exec_output());
+            remove_cur_artifact($module, 'module');
+//            drush_print('deleting existing module:'.$module.'....');
+//            drush_shell_exec('sudo rm -R '.$test_artifact_dir.'/sites/all/modules/'.$module);
+//            print_r(drush_shell_exec_output());
         }
-        // do something with the file
-        // note that '.' and '..' is returned even
     }
     closedir($handle);
 }elseif($env == 'stage'){
-    //ToDo
+    foreach(all_widget_modules($name,$type) as $key => $widget_name ){
+        remove_cur_artifact($widget_name, 'module');
+    }
 }
 
-drush_print('building new modules....');
+//build new one
 if($env == "stage"){
-    $dest_dir = 'sites/all/modules/'.get_widget_name($name, 'widget');
-    $git_repo = get_repo($name,'widget');
-    drush_shell_exec('git clone '.$git_repo.' '.$dest_dir);
-    print_r(drush_shell_exec_output());
+    foreach(all_widget_modules($name, $type) as $key => $widget_name ){
+        $artifact = get_artifact_by_name($widget_name);
+        $dest_dir = 'sites/all/modules/'.$artifact['final_name'];
+        $git_repo = $artifact['repo'].$artifact['repo_name'].'.git';
+        drush_print('building new modules....'.$git_repo);
+        drush_shell_exec('git clone '.$git_repo.' '.$dest_dir);
+    }
 }else{
+    drush_print('building '.$type.'s ...sudo cp -Rv '.$dist_package.'/'.$type.'s/ '.$test_artifact_dir.'/sites/all/'.$type.'s/');
     drush_shell_exec('sudo cp -R '.$dist_package.'/modules/ '.$test_artifact_dir.'/sites/all/modules/');
 }
 print_r(drush_shell_exec_output());
@@ -67,26 +80,30 @@ if($type == 'theme'){
     if ($env == 'dev' && $handle = opendir($dist_package.'/themes/')) {
         while (false !== ($theme = readdir($handle))) {
             if($theme !== '.' && $theme !== '..'){
-                drush_print('deleting existing theme:'.$theme.'....');
-                drush_shell_exec('sudo rm -R '.$test_artifact_dir.'/sites/all/themes/'.$theme);
-                print_r(drush_shell_exec_output());
+                  remove_cur_artifact($theme,'theme');
+//                drush_print('deleting existing theme:'.$theme.'....');
+//                drush_shell_exec('sudo rm -R '.$test_artifact_dir.'/sites/all/themes/'.$theme);
+//                print_r(drush_shell_exec_output());
             }
-            // do something with the file
-            // note that '.' and '..' is returned even
         }
         closedir($handle);
     }elseif($env == 'stage'){
-        //@ToDo
+        foreach(all_themes_from_package($name, $type) as $key => $theme_name ){
+            remove_cur_artifact($theme_name,'theme');
+        }
     }
 
-
-    drush_print('building new themes....');
+//building themes
     if($env == 'stage'){
-        $dest_dir = 'sites/all/themes/'.get_widget_name($name, 'theme');
-        $git_repo = get_repo($name,'theme');
-        drush_shell_exec('git clone '.$git_repo.' '.$dest_dir);
-        print_r(drush_shell_exec_output());
+        foreach(all_themes_from_package($name, $type) as $key => $t_name ){
+            $artifact = get_artifact_by_name($t_name);
+            $dest_dir = 'sites/all/themes/'.$artifact['final_name'];
+            $git_repo = $artifact['repo'].$artifact['repo_name'];
+            drush_print('building new themes....'.$git_repo);
+            drush_shell_exec('git clone '.$git_repo.' '.$dest_dir);
+        }
     }else{
+        drush_print('sudo cp -R '.$dist_package.'/themes/ '.$test_artifact_dir.'/sites/all/themes/');
         drush_shell_exec('sudo cp -R '.$dist_package.'/themes/ '.$test_artifact_dir.'/sites/all/themes/');
     }
     print_r(drush_shell_exec_output());
