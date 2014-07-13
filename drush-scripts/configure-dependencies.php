@@ -93,7 +93,7 @@ $currently_enabled = drush_invoke_process("@self", "pm-list",array(), array('pip
 $cur_enabled = empty($currently_enabled['object']) ? array() : array_keys($currently_enabled['object']);
 $all_not_enabled = array_diff($dependencies_without_widgets, $cur_enabled);
 //$depenencies_not_enabled = array_intersect(array_values($all_not_enabled), array_values($all_dependent_modules));
-$depenencies_not_enabled = array_intersect($all_not_enabled, $all_dependent_modules);
+$depenencies_not_enabled = array_intersect($dependencies_without_widgets, $all_not_enabled);
 
 if($debug){
     drush_print('Cur Enabled');

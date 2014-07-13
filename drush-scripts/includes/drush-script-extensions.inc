@@ -478,7 +478,7 @@ function all_widget_modules($name, $type){
         $widget_modules[] = $name;
     }
 
-    drush_print('widget_modules');
+    drush_print('Widget Modules:');
     print_r($widget_modules);
     return $widget_modules;
 }
@@ -647,11 +647,25 @@ function get_artifact_by_name($name){
             $artifact['repo_name'] = 'espresso';
             $artifact['final_name'] = 'desigssquare_com_theme_espresso';
             break;
-        case  'bootstrap':
+        case  'espresso_theme_plus':
             $artifact['name'] = $name;
-            $artifact['repo'] = $list_of_repos['theme'];
-            $artifact['repo_name'] = 'bootstrap';
-            $artifact['final_name'] = 'bootstrap';
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'espresso';
+            $artifact['final_name'] = 'desigssquare_com_theme_espresso_plus';
+            $artifact['branch'] = 'plus';
+            break;
+        case  'bootstrap':
+        $artifact['name'] = $name;
+        $artifact['repo'] = $list_of_repos['theme'];
+        $artifact['repo_name'] = 'bootstrap';
+        $artifact['final_name'] = 'bootstrap';
+        break;
+        case 'church':
+        case  'designssquare_com_site_church':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['site'];
+            $artifact['repo_name'] = 'church';
+            $artifact['final_name'] = 'designssquare_com_site_church';
             break;
     }
 

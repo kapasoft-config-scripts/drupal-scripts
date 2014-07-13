@@ -66,7 +66,7 @@ if($env == "stage"){
         $dest_dir = 'sites/all/modules/'.$artifact['final_name'];
         $git_repo = $artifact['repo'].$artifact['repo_name'].'.git';
         drush_print('building new modules....'.$git_repo);
-        drush_shell_exec('git clone '.$git_repo.' '.$dest_dir);
+        drush_shell_exec('git clone -b '.$artifact['branch'].' '.$git_repo.' '.$dest_dir);
     }
 }else{
     drush_print('building '.$type.'s ...sudo cp -Rv '.$dist_package.'/'.$type.'s/ '.$test_artifact_dir.'/sites/all/'.$type.'s/');

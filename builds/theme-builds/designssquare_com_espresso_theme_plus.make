@@ -6,7 +6,7 @@ projects[drupal][type] = core
 projects[drupal][version] = 7.26
 
 ;;custom modules
-widget[2][name]=espresso_theme
+widget[2][name]=espresso_theme_plus
 widget[2][order]=4
 widget[3][name]=designssquare_lib
 widget[3][order]=5

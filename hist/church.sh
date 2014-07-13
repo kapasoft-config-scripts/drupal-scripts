@@ -22,13 +22,13 @@ daa church 0.1 site no no
 #!/bin/zsh
 source /Users/maxit/shared-zshrc/zshrc_general
 
-daa newsletter 0.1 module "yes" "no"
+daa newsletter 0.1 module "yes" "no" "stage"
 cad newsletter module test
 
-daa espresso 0.4 theme "no" "yes"
+daa espresso 0.4 theme "no" "yes" "stage"
 cad espresso theme "dev" "yes"
 
-daa blog 0.1.12 module "yes" "no"
+daa blog 0.1.12 module "yes" "no" "
 cad blog module test "no"
 
 daa podcast 0.1 module "yes" "no"
