@@ -55,6 +55,8 @@ projects[] = image_url_formatter
 projects[] = feeds_tamper
 projects[] = calendar
 projects[] = date
+projects[] = ckeditor
+projects[] = imce
 
 ;;for new menu exporter
 projects[uuid][version] = 1.x-dev

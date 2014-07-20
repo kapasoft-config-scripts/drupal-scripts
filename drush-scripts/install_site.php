@@ -65,22 +65,21 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$debug_mode = TRUE;
 
 ###BUILDER
-//$project = 'dev_builder';
-//$db_name = 'dev_builder_db';
-//$db_user = 'dev_builder';
-//$db_password = '38394815';
-//$debug_mode = TRUE;
+$env = 'dev_p';
+//$env = 'dev';
+$project = $env.'_builder';
+$db_name = $env.'_builder_db';
+$db_user = $env.'_builder';
+$db_password = '38394815';
+$debug_mode = TRUE;
 
 ###LOAM
-//$project = 'dev_loam';
-//$db_name = 'dev_loam_db';
-//$db_user = 'dev_loam';
-//$db_password = '38394815';
-//$debug_mode = TRUE;
-
-//$project = 'test_loam';
-//$db_name = 'test_loam_db';
-//$db_user = 'test_loam';
+//$env = 'dev_p';
+//$env = 'test';
+//$env = 'dev';
+//$project = $env.'_loam';
+//$db_name = $env.'_loam_db';
+//$db_user = $env.'_loam';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 
@@ -178,13 +177,24 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$debug_mode = TRUE;
 
 ###CHURCH
-$env = 'test';
+//$env = 'stage';
+//$env = 'test';
 //$env = 'dev';
-$project = $env.'_church';
-$db_name = $env.'_church_db';
-$db_user = $env.'_church';
-$db_password = '38394815';
-$debug_mode = TRUE;
+//$project = $env.'_church';
+//$db_name = $env.'_church_db';
+//$db_user = $env.'_church';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
+
+###Sample_Data
+//$env = 'test';
+//$env = 'test';
+//$env = 'dev';
+//$project = $env.'_sam_data';
+//$db_name = $env.'_sam_data_db';
+//$db_user = $env.'_sam_data';
+//$db_password = 'password';
+//$debug_mode = TRUE;
 
 //###CKEDitor
 //$env = 'dev';
