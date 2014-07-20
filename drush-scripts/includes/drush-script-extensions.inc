@@ -322,6 +322,31 @@ function configure_ckeditor($module_name = 'designssquare_com_ckeditor')
 
 
     //@ToDo set profiles for IMCE to work
+    $imce_roles_profiles = array(
+        4 =>
+        array(
+            'weight' => '0',
+            'public_pid' => '1',
+        ),
+        3 =>
+        array(
+            'weight' => '0',
+            'public_pid' => '1',
+        ),
+        2 =>
+        array(
+            'weight' => 11,
+            'public_pid' => '1',
+        ),
+        1 =>
+        array(
+            'weight' => 12,
+            'public_pid' => 0,
+        ),
+    );
+    variable_set('imce_roles_profiles', $imce_roles_profiles);
+
+
 }
 
 
@@ -339,6 +364,33 @@ function configure_audio($module_name)
     variable_set('audiofield_players_dir', $payer_audio_src);
     drush_print('...configured audio player lib to path ' . $payer_audio_src);
 
+}
+
+/****
+*
+ * @param: --mail
+ * email account needs to be specified
+ *
+ * @param: --password
+ * the passowrd of the new user
+ *
+ * @param --role
+ * the role of the new user
+ *
+ * @param(direct): user_name
+ * the name of user is added
+ *
+ *
+ *
+ *
+ *****/
+function add_user($user_name){
+//    $email = variable_get('mail', 'admin@domain.com');
+//    $password = variable_get('password', 'password1');
+    $role = variable_get('role', 'anonymous user');
+
+    drush_user_create($user_name);
+    drush_user_add_role($role, $user_name);
 }
 
 //retrieve the name of widget
@@ -451,7 +503,7 @@ function get_make_file($name, $type)
         $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '_plus' . '.make';
     }
 
-    drush_print('****make_file:'.$make_file);
+    drush_print('****make_file:' . $make_file);
     return $make_file;
 }
 

@@ -7,7 +7,8 @@
 
 //include_once dirname(__FILE__).'/includes/drush-script-extensions.inc';
 //include_once getcwd().'/../../includes/drush-script-extensions.inc';
-include_once '/Users/maxit/Sites/drupal/config/drush-scripts/includes/drush-script-extensions.inc';
+
+include_once 'includes/drush-script-extensions.inc';
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');
