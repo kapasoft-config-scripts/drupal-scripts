@@ -109,6 +109,18 @@ if($type == 'theme'){
     print_r(drush_shell_exec_output());
 }
 
+//download all projects specified in the .make file
+$make_file = get_make_file($name, $type);
+$build_file_parsed = drupal_parse_info_file($make_file);
+$project_modules = _project_modules_from_make($build_file_parsed);
+
+foreach($project_modules as $key=>$module){
+    //download
+    drush_print('about do download '.$module."...");
+    drush_print('module '. $module . ((drush_invoke_process("@self", "pm-download", array($module)) ? ' WAS ' : ' WAS NOT')) . ' downloaded');
+
+}
+
 //@ToDo read from .make file for all themes for the Widget to loop through
 ////build theme
 //drush_print('build themes ...');
