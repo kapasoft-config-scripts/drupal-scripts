@@ -27,12 +27,12 @@ if(!($user_name || $mail || $password || $role)){
     );
 }
 
-//if($debug){
+if($debug){
     drush_print('user-name: '.$user_name);
     drush_print('mail: '.$mail);
     drush_print('password: '.$password);
     drush_print('role: '.$role);
-//}
+}
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');

@@ -387,7 +387,7 @@ function configure_audio($module_name)
 function add_user($user_name){
 //    $email = variable_get('mail', 'admin@domain.com');
 //    $password = variable_get('password', 'password1');
-    $role = variable_get('role', 'anonymous user');
+    $role = drush_get_option('role', 'anonymous user');
 
     drush_user_create($user_name);
     drush_user_add_role($role, $user_name);
