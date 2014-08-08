@@ -133,6 +133,11 @@ action[en_sample][order]=5
 action[en_sample][tag]=widgets
 action[en_sample][param][module_name]=designssquare_lib_sample_data
 
+action[en_prod][name]=get_production_ready
+action[en_prod][order]=14
+action[en_prod][tag]=prod
+
+
 ;;dev modules
 projects[] = module_filter
 projects[] = devel
