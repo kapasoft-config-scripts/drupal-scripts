@@ -13,8 +13,6 @@ if(!isset($artifact_name) || empty($artifact_name)){drush_die("Artifact name not
 //$artifact_dir = 'designssquare_com_'.$artifact_name;
 //$make_file = '../../config/builds/'.$artifact_type.'-builds/designssquare_com_'.$artifact_name.'_'.$artifact_type.'.make';
 $make_file = get_make_file($artifact_name, $artifact_type);
-drush_print('****makefile: '.$make_file);
-$debug = true;
 
 // check if we can bootstrap
 $self = drush_sitealias_get_record('@self');
@@ -45,8 +43,11 @@ foreach($dependencies_per_widget as $key => $mod_dependancies){
     $all_dependent_modules = (isset($mod_dependancies) && is_array($mod_dependancies)) ? array_unique(array_merge($all_dependent_modules, $mod_dependancies)) : $all_dependent_modules;
 }
 
-drush_print('*********projects:');
-print_r($build_file_parsed);
+if(DEBUG_ON){
+    drush_print('*********projects:');
+    print_r($build_file_parsed);
+}
+
 
 //grab all dependencies from make file
 $project_modules = _project_modules_from_make($build_file_parsed);
@@ -54,7 +55,7 @@ $all_dependent_modules = (isset($project_modules) && is_array($project_modules))
 
 
 /*****DEBUG******/
-if($debug){
+if(DEBUG_ON){
     drush_print('Widget Modules:');
     print_r($widget_modules);
     drush_print('Project Modules:');
@@ -108,7 +109,7 @@ $all_not_enabled = array_diff($dependencies_without_widgets, $cur_enabled);
 //$depenencies_not_enabled = array_intersect(array_values($all_not_enabled), array_values($all_dependent_modules));
 $depenencies_not_enabled = array_intersect($dependencies_without_widgets, $all_not_enabled);
 
-if($debug){
+if(DEBUG_ON){
     drush_print('Cur Enabled');
     print_r($cur_enabled);
     drush_print('All Not Enabled');
@@ -116,14 +117,17 @@ if($debug){
     drush_print('Currently Inactive From Dependencies');
     print_r($depenencies_not_enabled);
 }else{
-    drush_print("/n".'Currently Inactive From Dependencies');
+    drush_print("\n".'Currently Inactive From Dependencies');
     print_r($depenencies_not_enabled);
 }
 
 //enable inactive depencencies
 foreach($depenencies_not_enabled as $key => $dependent_module){
-    ($debug) ? drush_print('enabling...') : 'do nothing';
-    print_r($dependent_module);
+    if(DEBUG_ON){
+        drush_print('enabling...');
+        print_r($dependent_module);
+        drush_print("\n");
+    }
     //@ToDo fix the bug for 'features_extra' break
     if($dependent_module != 'features_extra'){
         //download first if module with different version than stable

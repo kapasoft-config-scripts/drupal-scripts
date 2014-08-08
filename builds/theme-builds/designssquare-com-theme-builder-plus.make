@@ -8,10 +8,15 @@ projects[drupal][version] = 7.26
 ;;custom modules
 widget[1][name]=designssquare_lib_sample_data
 widget[1][order]=6
-widget[2][name]=builder_theme
+widget[2][name]=builder_theme_plus
 widget[2][order]=4
 widget[3][name]=designssquare_lib
 widget[3][order]=5
+widget[4][name]=designssquare_com_ckeditor
+widget[4][order]=3
+widget[5][name]=designssquare_theme_blocks_plus
+widget[5][order]=7
+
 
 ;;themes
 theme[1][name]=bootstrap
@@ -33,6 +38,7 @@ projects[] = entity
 projects[] = entityreference
 projects[] = image_url_formatter
 projects[] = feeds_tamper
+projects[] = pathauto
 
 
 ;;for new menu exporter

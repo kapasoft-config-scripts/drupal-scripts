@@ -65,23 +65,24 @@ require_once  '../config/drush-scripts/includes/drush-script-extensions.inc';
 //$debug_mode = TRUE;
 
 ###BUILDER
-$env = 'dev_p';
+//$env = 'dev_p';
 //$env = 'dev';
-$project = $env.'_builder';
-$db_name = $env.'_builder_db';
-$db_user = $env.'_builder';
-$db_password = '38394815';
-$debug_mode = TRUE;
+//$env = 'test';
+//$project = $env.'_builder';
+//$db_name = $env.'_builder_db';
+//$db_user = $env.'_builder';
+//$db_password = '38394815';
+//$debug_mode = TRUE;
 
 ###LOAM
 //$env = 'dev_p';
 //$env = 'test';
-//$env = 'dev';
-//$project = $env.'_loam';
-//$db_name = $env.'_loam_db';
-//$db_user = $env.'_loam';
-//$db_password = '38394815';
-//$debug_mode = TRUE;
+$env = 'stage';
+$project = $env.'_loam';
+$db_name = $env.'_loam_db';
+$db_user = $env.'_loam';
+$db_password = '38394815';
+$debug_mode = TRUE;
 
 //$project = 'prod_loam';
 //$db_name = 'prod_loam_db';
@@ -114,12 +115,12 @@ $debug_mode = TRUE;
 //$debug_mode = TRUE;
 
 
-#PORTFOLIO
+#SERVICE
 //$env = 'dev';
 //$env = 'test';
-//$project = $env.'_portfolio';
-//$db_name = $env.'_portfolio_db';
-//$db_user = $env.'_portfolio';
+//$project = $env.'_service';
+//$db_name = $env.'_service_db';
+//$db_user = $env.'_service';
 //$db_password = '38394815';
 //$debug_mode = TRUE;
 

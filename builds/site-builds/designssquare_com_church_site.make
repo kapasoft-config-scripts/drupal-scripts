@@ -18,13 +18,34 @@ widget[4][order]=7
 widget[5][name]=designssquare_com_site_church
 widget[5][order]=8
 
-
-
 ;;themes
 theme[1][name]=bootstrap
 theme[1][order]=1
 theme[2][name]=builder
 theme[2][order]=2
+
+
+
+action[config_depend][name]=configure_all_dependencies
+action[config_depend][order]=1
+action[config_depend][make_file]=widget_make_file
+
+;;action[configure_audio][name]=configure_audio
+;;action[configure_audio][order]=3
+;;action[configure_audio][param][module_name]=designssquare_lib
+;;action[configure_video][param][audio-player]=wpaudioplayer
+
+action[configure_editor][name] = configure_editor
+action[configure_editor][order]=5
+action[configure_editor][param][module_name]=designssquare_com_ckeditor
+;;action[configure_editor][param][editor]=ckeditor
+
+
+;;action[configure_video][name]=configure_video
+;;action[configure_video][order]=4
+;;action[configure_video][param][module_name]=designssquare_lib
+;;action[configure_video][param][vidoe-lib]=video-js
+
 
 ;;dev modules
 projects[] = module_filter

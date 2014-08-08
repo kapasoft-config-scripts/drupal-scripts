@@ -12,10 +12,8 @@ widget[1][name]=designssquare_com_portfolio_sample_data_kickstart
 widget[1][order]=0
 widget[2][name]=designssquare_com_portfolio_structure_and_configurations
 widget[2][order]=2
-widget[10][repo]=kapasoft-config-scripts/designssquare-lib-assets
-widget[10][order]=10
-widget[10][name]=designssquare_lib_assets
 widget[9][name]=designssquare_lib
-widget[9][repo]=kapasoft-config-scripts/designssquare-utils
 widget[9][order]=9
+widget[10][name]=designssquare_lib_sample_data
+widget[10][order]=10
 

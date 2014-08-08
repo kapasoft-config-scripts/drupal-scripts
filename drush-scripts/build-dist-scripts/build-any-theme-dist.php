@@ -14,8 +14,10 @@ if($plus_package == 'no'){
 }else{
     $package_name = 'designssquare-com-' . $artifact_type . '-' . $artifact_name . '-' . 'plus';
 }
-$dist_dir = '/Users/maxit/Sites/drupal/dist/';
-$debug = true;
+
+$config = get_config();
+$dist_dir = $config['dist'];
+
 //@ToDo Fix ssh keys with drush to avoid prompt
 $git_mod_repo = 'https://github.com/kapasoft-drupal-modules/' . $artifact_name . '.git';
 $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
@@ -40,7 +42,7 @@ if (file_exists($dest)) {
 }
 
 //build dependent modules
-build_modules($artifact_type, $artifact_name, $dest, $debug);
+build_modules($artifact_type, $artifact_name, $dest, DEBUG_ON);
 
 ////retrieving modules to be included in the build
 //$make_file = $make_file = '/Users/maxit/Sites/drupal/config/builds/' . $artifact_type . '-builds/designssquare_com_' . $artifact_name . '_' . $artifact_type . '.make';
@@ -48,7 +50,7 @@ build_modules($artifact_type, $artifact_name, $dest, $debug);
 //$widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
 //
 ///*****DEBUG******/
-//if ($debug) {
+//if (DEBUG_ON) {
 //    drush_print('Modules to include:');
 //    print_r($widget_modules);
 //}

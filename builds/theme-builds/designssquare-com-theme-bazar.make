@@ -1,26 +1,24 @@
 api = 2
 core = 7.x
 
-;;core
-projects[drupal][type] = core
-projects[drupal][version] = 7.26
 
-;;custom modules
-;;widget[1][name]=designssquare_alias_path
-widget[1][name]=designssquare_lib_sample_data
-widget[1][order]=6
-widget[2][name]=builder_theme
-widget[2][order]=4
+widget[0][name]=bazar_theme
+widget[0][order]=0
+widget[1][name]=designssquare_com_sample_data
+widget[1][order]=2
+widget[2][name]=designssquare_com_theme_bazar_structure
+widget[2][order]=3
 widget[3][name]=designssquare_lib
-widget[3][order]=5
-widget[4][name]=designssquare_com_ckeditor
-widget[4][order]=6
+widget[3][order]=1
 
 ;;themes
-theme[1][name]=bootstrap
-theme[1][order]=1
-theme[2][name]=builder
+theme[2][name]=bazar
 theme[2][order]=2
+
+
+projects[jquery_update][version] = 2.x-dev
+projects[] = image_url_formatter
+projects[] = feeds_tamper
 
 ;;dev modules
 projects[] = module_filter
@@ -48,7 +46,6 @@ projects[] = entity
 projects[] = entityreference
 projects[] = image_url_formatter
 projects[] = feeds_tamper
-
 
 
 ;;for new menu exporter

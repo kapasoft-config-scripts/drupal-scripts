@@ -1,6 +1,9 @@
 <?php
 date_default_timezone_set('UTC');
 $ts = date('Ymdhis');
+define("DIST_DIR", '/Users/maxit/Sites/drupal/dist/');
+define("DEV_DIR", '/Users/maxit/Sites/drupal/');
+define('DEBUG_ON',TRUE);
 
 
 /******COMMON TASKS SHARED BETWEEN SCRIPTS*******/
@@ -206,7 +209,7 @@ function stage_modules($artifact_type, $artifact_name, $dest = NULL, $debug = TR
     $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
 
     /*****DEBUG******/
-    if ($debug) {
+    if (DEBUG_ON) {
         drush_print('make file: ' . $make_file);
         drush_print('Modules to include:');
         print_r($widget_modules);
@@ -247,6 +250,7 @@ function stage_modules($artifact_type, $artifact_name, $dest = NULL, $debug = TR
                 print_r(drush_shell_exec_output());
             }
             drush_print('staging ' . $widget_name . ' module ...' . $source_repo);
+            //@ToDo This is outdated
             drush_shell_exec('git clone ' . $source_repo . ' ' . $module_dest_dir . $widget_name);
             print_r(drush_shell_exec_output());
         }
@@ -255,41 +259,69 @@ function stage_modules($artifact_type, $artifact_name, $dest = NULL, $debug = TR
 
 /************Building Dist***********/
 
-function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE)
-{
-    $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
-    $git_module_repo = 'https://github.com/kapasoft-drupal-modules/';
-    //retrieving modules to be included in the build
-    $make_file = get_make_file($artifact_name, $artifact_type, 'dev');
-    drush_print('****make-file: ' . $make_file);
-    $build_file_parsed = drupal_parse_info_file($make_file);
-    $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+/*
+ * takes artifact info and clones into destination based on the tag name versions
+ *
+ *
+ */
 
-    /*****DEBUG******/
-    if ($debug) {
-        drush_print('Modules to include:');
-        print_r($widget_modules);
-    }
+function build_artifact($artifact, $dest){
+    $artifact_config = get_artifact_by_name($artifact['name']);
+    $widget_dependency_name = $artifact_config['name'];
+    $widget_dist_dest_lib = $dest . '/'.$artifact_config['type'].'s/' . $artifact_config['final_name'];
+    //@ToDo make it clone the tag as well to avoid separate co for tag
+    $command = 'git clone -b ' . $artifact_config['branch'] . ' ' . $artifact_config['repo'] . $artifact_config['repo_name'] . '.git ' . $widget_dist_dest_lib;
+    (DEBUG_ON) ? _log('building ' . $widget_dependency_name . ' '.$artifact_config['type'].' ...' . $artifact_config['repo']) : '';
+    execute_command($command);
 
-    foreach ($widget_modules as $key => $module) {
-
-        $artifact_ins = get_artifact_by_name($module);
-        $widget_dependency_name = $artifact_ins['name'];
-        $widget_dist_dest_lib = $dest . '/modules/' . $artifact_ins['final_name'];
-        drush_print('building ' . $widget_dependency_name . ' module ...' . $artifact_ins['repo_name']);
-        drush_shell_exec('git clone -b ' . $artifact_ins['branch'] . ' ' . $artifact_ins['repo'] . $artifact_ins['repo_name'] . '.git ' . $widget_dist_dest_lib);
-        print_r(drush_shell_exec_output());
-
+    if(isset($artifact['ver']) && !empty($artifact['ver'])){
+        $command = 'git checkout '.$artifact['ver'];
+        (DEBUG_ON) ? _log('checking out version... ') : '';
+        $cur_dir = getcwd();
+        drush_op('chdir', $widget_dist_dest_lib);
+        execute_command($command);
+        drush_op('chdir', $cur_dir);
     }
 }
 
+//@ToDo remove
+//function build_modules($artifact_type, $artifact_name, $dest, $debug = TRUE)
+//{
+//    $git_util_repo = 'https://github.com/kapasoft-config-scripts/';
+//    $git_module_repo = 'https://github.com/kapasoft-drupal-modules/';
+//    //retrieving modules to be included in the build
+//    $make_file = get_make_file($artifact_name, $artifact_type, 'dev');
+////    drush_print('****make-file: ' . $make_file);
+//    $build_file_parsed = drupal_parse_info_file($make_file);
+//    $widget_modules = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+//
+//    /*****DEBUG******/
+//    if (DEBUG_ON) {
+//        drush_print('Modules to include:');
+//        print_r($widget_modules);
+//    }
+//
+//    foreach ($widget_modules as $key => $module) {
+//
+//        $artifact_ins = get_artifact_by_name($module);
+//        $widget_dependency_name = $artifact_ins['name'];
+//        $widget_dist_dest_lib = $dest . '/modules/' . $artifact_ins['final_name'];
+//        drush_print('building ' . $widget_dependency_name . ' module ...' . $artifact_ins['repo']);
+//        drush_shell_exec('git clone -b ' . $artifact_ins['branch'] . ' ' . $artifact_ins['repo'] . $artifact_ins['repo_name'] . '.git ' . $widget_dist_dest_lib);
+//        print_r(drush_shell_exec_output());
+//
+//    }
+//}
+
 function _copy_documentation($src, $dest)
 {
-    drush_print('copying documentation ....' . $dest . '/docs/* from ' . $src . '/docs/*');
-    drush_shell_exec('sudo mkdir ' . $dest . '/docs/');
-    print_r(drush_shell_exec_output());
-    drush_shell_exec('sudo sudo cp -R ' . $src . '/docs/* ' . $dest . '/docs/');
-    print_r(drush_shell_exec_output());
+//    drush_print('copying documentation ....' . $dest . '/docs/* from ' . $src . '/docs/*');
+//    drush_shell_exec('sudo mkdir ' . $dest . '/docs/');
+    execute_command('sudo mkdir ' . $dest . '/docs/');
+//    print_r(drush_shell_exec_output());
+//    drush_shell_exec('sudo sudo cp -R ' . $src . '/docs/* ' . $dest . '/docs/');
+    execute_command('sudo sudo cp -R ' . $src . '/docs/* ' . $dest . '/docs/');
+//    print_r(drush_shell_exec_output());
 }
 
 /**********Configure*********/
@@ -367,7 +399,7 @@ function configure_audio($module_name)
 }
 
 /****
-*
+ *
  * @param: --mail
  * email account needs to be specified
  *
@@ -384,7 +416,8 @@ function configure_audio($module_name)
  *
  *
  *****/
-function add_user($user_name){
+function add_user($user_name)
+{
 //    $email = variable_get('mail', 'admin@domain.com');
 //    $password = variable_get('password', 'password1');
     $role = drush_get_option('role', 'anonymous user');
@@ -427,84 +460,191 @@ function get_repo($name, $type)
     return $repo_name;
 }
 
-function all_themes_from_package($name, $type)
+/*
+ * retrieves the artifacts from make file based on the type(widget, theme, etc)
+ * @param: $name
+ *      name of the widget to retrieve makefile
+ * @param: $type
+ *      type of the widget for retrieving makefile as well as specific artifacts from makefile afterwards
+ *
+ * @return: array
+ *      array of artifacts from makefile
+ */
+function all_artifacts_from_package($name, $type)
 {
-    //add the main theme
-    $themes = array();
+    //list of artifacts in the package
+    $artifacts = array();
+    $min = drush_get_option('min', 'no');
+    $is_min = ($min == 'yes') ? true : false;
 
-    //add dependent themes
+    //add dependent artifacts
     //read make file
-    //retrieving modules to be included in the build
+    //retrieving artifacts to be included in the build
     $make_file = get_make_file($name, $type);
-//        drush_print('****make-file: '.$make_file);
     if (!file_exists($make_file)) {
         drush_die('make file - ' . $make_file . ' does not exist');
     }
+
     $build_file_parsed = drupal_parse_info_file($make_file);
-//        drush_print('***parsed_make: ');
-//        print_r($build_file_parsed);
-    $themes_configured = _array_column(array_orderby($build_file_parsed['theme'], 'order', SORT_ASC), "name");
 
-    //clean out dependencies part of the widget and doesn't need to be build
-    foreach ($themes_configured as $key => $m_name) {
-        $art = get_artifact_by_name($m_name);
-        if (!empty($art['name'])) {
-            $themes[] = $m_name;
-        }
-    }
+    $type_of_artifact = ($type == 'module') ? 'widget' : $type;
+//    $artifacts_configured = _array_column(array_orderby($build_file_parsed[$type_of_artifact], 'order', SORT_ASC), "name");
+    $artifacts_configured = array_orderby($build_file_parsed[$type_of_artifact], 'order', SORT_ASC);
 
-
-    return $themes;
-}
-
-function all_widget_modules($name, $type)
-{
-    $min = drush_get_option('min-ver', 'no');
-    $is_min = ($min == 'yes') ? true : false;
-    $widget_modules = array();
-
-    if (!$is_min) {
-        //add dependencies
-
-        //read make file
-        //retrieving modules to be included in the build
-        $make_file = get_make_file($name, $type);
-        if (!file_exists($make_file)) {
-            drush_die('make file - ' . $make_file . ' does not exist');
-        }
-        $build_file_parsed = drupal_parse_info_file($make_file);
-        $widget_modules_configured = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+//    _log('#artifacts  $artifacts_configured');
+//    print_r($artifacts_configured);
+    if (!$is_min || $type != 'module') {
+//        $artifacts_configured = _array_column(array_orderby($build_file_parsed[$type], 'order', SORT_ASC), "name");
 
         //clean out dependencies part of the widget and doesn't need to be build
-        foreach ($widget_modules_configured as $key => $m_name) {
-            $art = get_artifact_by_name($m_name);
+        foreach ($artifacts_configured as $key => $artifact) {
+            $art = get_artifact_by_name($artifact['name']);
             if (!empty($art['name'])) {
-                $widget_modules[] = $m_name;
+                $artifacts[] = $artifact;
             }
         }
     } else {
         //add the main module
-        $widget_modules[] = $name;
+        $artifacts[] = get_artifact_by_name($name);
     }
 
-    drush_print('Widget Modules:');
-    print_r($widget_modules);
-    return $widget_modules;
+    return $artifacts;
 }
 
-function get_make_file($name, $type)
+//retrieves list of actions from the make file
+function get_actions_from_make($make_file)
 {
-    $plus_package_option = drush_get_option('plus', FALSE);
-    $plus_package = ($plus_package_option && $plus_package_option == 'yes') ? 'yes' : 'no';
-    $config = get_config();
-    if ($plus_package == 'no') {
-        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '.make';
-    } else {
-        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '_plus' . '.make';
+    if (!file_exists($make_file)) {
+        drush_die('make file - ' . $make_file . ' does not exist');
     }
 
-    drush_print('****make_file:' . $make_file);
-    return $make_file;
+    $build_file_parsed = drupal_parse_info_file($make_file);
+    $actions = array_orderby($build_file_parsed['action'], 'order', SORT_ASC);
+
+    return $actions;
+}
+
+
+//function all_themes_from_package($name, $type)
+//{
+//    //add the main theme
+//    $themes = array();
+//
+//    //add dependent themes
+//    //read make file
+//    //retrieving modules to be included in the build
+//    $make_file = get_make_file($name, $type);
+////        drush_print('****make-file: '.$make_file);
+//    if (!file_exists($make_file)) {
+//        drush_die('make file - ' . $make_file . ' does not exist');
+//    }
+//    $build_file_parsed = drupal_parse_info_file($make_file);
+////        drush_print('***parsed_make: ');
+////        print_r($build_file_parsed);
+//    $themes_configured = _array_column(array_orderby($build_file_parsed['theme'], 'order', SORT_ASC), "name");
+//
+//    //clean out dependencies part of the widget and doesn't need to be build
+//    foreach ($themes_configured as $key => $m_name) {
+//        $art = get_artifact_by_name($m_name);
+//        if (!empty($art['name'])) {
+//            $themes[] = $m_name;
+//        }
+//    }
+//
+//
+//    return $themes;
+//}
+//
+//function all_widget_modules($name, $type)
+//{
+//    $min = drush_get_option('min-ver', 'no');
+//    $is_min = ($min == 'yes') ? true : false;
+//    $widget_modules = array();
+//
+//    if (!$is_min) {
+//        //add dependencies
+//
+//        //read make file
+//        //retrieving modules to be included in the build
+//        $make_file = get_make_file($name, $type);
+//        if (!file_exists($make_file)) {
+//            drush_die('make file - ' . $make_file . ' does not exist');
+//        }
+//        $build_file_parsed = drupal_parse_info_file($make_file);
+//        $widget_modules_configured = _array_column(array_orderby($build_file_parsed['widget'], 'order', SORT_ASC), "name");
+//
+//        //clean out dependencies part of the widget and doesn't need to be build
+//        foreach ($widget_modules_configured as $key => $m_name) {
+//            $art = get_artifact_by_name($m_name);
+//            if (!empty($art['name'])) {
+//                $widget_modules[] = $m_name;
+//            }
+//        }
+//    } else {
+//        //add the main module
+//        $widget_modules[] = $name;
+//    }
+//
+//    drush_print('Widget Modules:');
+//    print_r($widget_modules);
+//    return $widget_modules;
+//}
+
+//retrieves make file or returns false if cannot find the name
+//on default make_dir is '$type-builds'. Otherwise, it is specified in artifact configurations
+//on defautl make_name is built from alternatives. Otherwise, it is specified in artifact configurations
+function get_make_file($name, $type)
+{
+    $widget_name = drush_get_option('artifact-name', 'blog');
+    $widget_type = drush_get_option('artifact-type', 'module');
+    $config = get_config();
+    $artifact = get_artifact_by_name($widget_name);
+
+    $list_of_names = artifact_names($widget_name, $widget_type);
+    foreach($list_of_names as $key => $artifact_name){
+        $make_file = $config['make_root'].'/';
+        $make_file .= (isset($artifact['make_dir']) && !empty($artifact['make_dir'])) ? $artifact['make_dir'].'/' : $widget_type.'-builds/';
+        $make_file .= (isset($artifact['make_name']) && !empty($artifact['make_name'])) ? $artifact['make_name'].'.make' : $artifact_name.'.make';
+
+        if(file_exists($make_file)){
+            (DEBUG_ON) ? _log('make_file found ' . $make_file) : '';
+            return $make_file;
+        }
+    }
+
+    (DEBUG_ON) ? _log('ERROR: make_file not found. Missing ' . $make_file) : '';
+    return false;
+////    $plus_package_option = drush_get_option('plus', FALSE);
+//    $branch = drush_get_option('branch', "false");
+//    $widget_type = drush_get_option('artifact-type', 'module');
+//    $config = get_config();
+//    //read from artifact description
+//    $artifact = get_artifact_by_name($name);
+//    drush_print('ARTIFACT: ');
+//    print_r($artifact);
+//    if(isset($artifact['make_name']) && !empty($artifact['make_name'])){
+//        //make file declared, lets use it
+//        $make_file = $config['root'].$artifact['make_dir'].'/'.$artifact['make_name'].'.make';
+//    }else{
+//
+//        //ensure we use the widget make file always first before trying to read another make file
+//        $type = (isset($widget_type) && ($widget_type != $type)) ? $widget_type : $type ;
+////    $plus_package = ($plus_package_option && $plus_package_option == 'yes') ? 'yes' : 'no';
+//
+//
+//        $make_file = $config['root'] . '/builds/' . $type . '-builds/'. $config['package_prefix'] . $name . '_' . $type;
+//        ($branch != "false" ) ? $make_file .= '_'.$branch : '' ;
+//        $make_file .= '.make';
+//    }
+//
+////    if ($plus_package == 'no') {
+////        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '.make';
+////    } else {
+////        $make_file = $config['root'] . '/builds/' . $type . '-builds/designssquare_com_' . $name . '_' . $type . '_plus' . '.make';
+////    }
+//
+//    (DEBUG_ON) ? drush_print('****make_file:' . $make_file) : '';
+//    return $make_file;
 }
 
 function get_config()
@@ -513,6 +653,10 @@ function get_config()
     //@ToDo getenv() not working
 //    $config['root'] = getenv('WIDGET_BUILD_ROOT');
     $config['root'] = '/Users/maxit/Sites/drupal/config';
+    $config['work_dir'] = '/Users/maxit/Sites/drupal';
+    $config['make_root'] = '/Users/maxit/Sites/drupal/config/builds';
+    $config['dist'] = '/Users/maxit/Sites/drupal/dist';
+    $config['package_prefix'] = 'designssquare-com-';//prefix used in front of package
 //    $var = drush_shell_exec('echo $WIDGET_BUILD_ROOT');
 //    print_r(drush_shell_exec_output());
 //    print_r(getenv('SERVER_NAME'));
@@ -526,10 +670,12 @@ function remove_cur_artifact($name, $type)
     $root = getcwd();
     $artifact = get_artifact_by_name($name);
     $dest_dir = $root . '/sites/all/' . $type . 's/' . $artifact['final_name'];
+    _log('remove_cur_artifiact checks destination: '.$dest_dir);
     if (file_exists($dest_dir)) {
-        drush_print('deleting existing ' . $type . ': ' . $name . '....');
-        drush_shell_exec('sudo rm -R ' . $dest_dir);
-        print_r(drush_shell_exec_output());
+        _log('deleting existing ' . $type . ': ' . $name . '....' . $dest_dir);
+        execute_command('sudo rm -R ' . $dest_dir);
+    }else{
+        _log('ERROR: artifact - '.$dest_dir.' to be removed doesnt exist');
     }
 }
 
@@ -538,54 +684,75 @@ function get_artifact_by_name($name)
     $list_of_repos = get_repos();
     $artifact = array();
     $artifact['name'] = '';
+    $artifact['type'] = 'module'; //type of the widget - module or theme...no site,etc
     $artifact['repo'] = '';
     $artifact['repo_name'] = '';
     $artifact['final_name'] = '';
+    $artifact['dev_dir'] = 'modules'; //relative dev directory
+    $artifact['dev_name'] = $name; //name of the widget in dev environment
     $artifact['branch'] = 'master';
+    $artifact['make_dir'] = ''; //relative path to make file directory. Default '$type-builds'
+    $artifact['make_name'] = ''; //name of the make file. Default built from artifact name
 
     switch ($name) {
         case 'designssquare_lib':
+        case 'designssquare_com_lib':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare-utils';
             $artifact['final_name'] = 'designssquare_com_lib';
-            break;
+            $artifact['dev_name'] = 'designssquare_lib';
+            $artifact['dev_dir'] = 'modules';
+        break;
         case  'designssquare_alias_path':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare_alias_path';
             $artifact['final_name'] = 'designssquare_com_lib_alias';
+            $artifact['dev_name'] = 'designssquare_alias_path';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'designssquare_lib_assets':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare-lib-assets';
             $artifact['final_name'] = 'designssquare_com_lib_assets';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'designssquare_lib_feature_assets':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare-lib-feature-assets';
             $artifact['final_name'] = 'designssquare_com_lib_feature_assets';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'designssquare_lib_sample_data':
+        case 'designssquare_com_lib_sample_data':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare-lib-sample-data';
             $artifact['final_name'] = 'designssquare_com_lib_sample_data';
-            break;
-        case  'designssquare_theme_blocks':
+            $artifact['dev_name'] = 'designssquare_lib_sample_data';
+            $artifact['dev_dir'] = 'modules';
+        break;
+        case 'designssquare_theme_blocks':
+        case 'designssquare_com_theme_blocks':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'designssquare_com_theme_blocks';
             $artifact['final_name'] = 'designssquare_com_theme_blocks';
-            break;
-        case  'designssquare_theme_blocks_plus':
+            $artifact['dev_name'] = 'designssquare_theme_blocks';
+            $artifact['dev_dir'] = 'modules';
+        break;
+        case 'designssquare_com_theme_blocks_plus':
+        case 'designssquare_theme_blocks_plus':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'designssquare_com_theme_blocks';
             $artifact['final_name'] = 'designssquare_com_theme_blocks_plus';
             $artifact['branch'] = 'plus';
+            $artifact['dev_name'] = 'designssquare_com_theme_blocks_plus';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'blog':
         case  'designssquare_com_blog':
@@ -593,14 +760,20 @@ function get_artifact_by_name($name)
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'blog';
             $artifact['final_name'] = 'designssquare_com_widget_blog';
-            break;
+            $artifact['dev_name'] = 'blog';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_blog_module';
+        break;
         case 'ckeditor':
+        case 'designssquare_com_utils_ckeditor':
         case 'designssquare_com_ckeditor':
-        case 'designssquare_utils_ckeditor':
+//        case 'designssquare_utils_ckeditor':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['utils'];
             $artifact['repo_name'] = 'designssquare-utils-ckeditor';
             $artifact['final_name'] = 'designssquare_com_utils_ckeditor';
+            $artifact['dev_name'] = 'designssquare_utils_ckeditor';
             break;
         case 'commerce':
         case  'designssquare_com_commerce':
@@ -608,87 +781,190 @@ function get_artifact_by_name($name)
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'commerce';
             $artifact['final_name'] = 'designssquare_com_widget_commerce';
-            break;
+            $artifact['dev_name'] = 'commerce';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_commerce_module';
+        break;
         case 'gallery':
         case  'designssquare_com_widget_gallery':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'gallery';
             $artifact['final_name'] = 'designssquare_com_widget_gallery';
-            break;
+            $artifact['dev_name'] = 'gallery';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_gallery_module';
+        break;
         case 'slider':
+        case 'designssquare_com_widget_slider':
         case  'designssquare_com_slider':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'slider';
             $artifact['final_name'] = 'designssquare_com_widget_slider';
-            break;
+            $artifact['dev_name'] = 'slider';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_slider_module';
+        break;
         case 'newsletter':
         case  'designssquare_com_widget_newsletter':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'newsletter';
             $artifact['final_name'] = 'designssquare_com_widget_newsletter';
-            break;
+            $artifact['dev_name'] = 'newsletter';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_newsletter_module';
+        break;
         case 'podcast':
         case  'designssquare_com_widget_podcast':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'podcast';
             $artifact['final_name'] = 'designssquare_com_widget_podcast';
-            break;
+            $artifact['dev_name'] = 'podcast';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_podcast_module';
+        break;
         case 'portfolio':
         case  'designssquare_com_widget_portfolio':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'portfolio';
             $artifact['final_name'] = 'designssquare_com_widget_portfolio';
+            $artifact['dev_name'] = 'portfolio';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_portfolio_module';
+        break;
+        case 'service':
+        case 'designssquare_com_widget_service':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'service';
+            $artifact['final_name'] = 'designssquare_com_widget_service';
+            $artifact['dev_name'] = 'service';
+            $artifact['dev_dir'] = 'modules';
+//            $artifact['make_dir'] = 'module-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_portfolio_module';
             break;
         case  'espresso':
             $artifact['name'] = $name;
+            $artifact['type'] = 'theme';
             $artifact['repo'] = $list_of_repos['theme'];
             $artifact['repo_name'] = 'espresso';
             $artifact['final_name'] = 'espresso';
+            $artifact['dev_dir'] = 'themes';
+            $artifact['dev_name'] = 'espresso';
+//            $artifact['make_dir'] = 'theme-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_espresso_theme';
             break;
         case  'espresso_theme':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'espresso';
             $artifact['final_name'] = 'designssquare_com_theme_espresso';
+            $artifact['dev_name'] = 'espresso_theme';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'espresso_theme_plus':
+        case 'desigssquare_com_theme_espresso_plus':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'espresso';
             $artifact['final_name'] = 'desigssquare_com_theme_espresso_plus';
             $artifact['branch'] = 'plus';
+            $artifact['dev_name'] = 'espresso_theme_plus';
+            $artifact['dev_dir'] = 'modules';
+            break;
+        case  'bazar':
+            $artifact['name'] = $name;
+            $artifact['type'] = 'theme';
+            $artifact['repo'] = $list_of_repos['theme'];
+            $artifact['repo_name'] = 'bazar';
+            $artifact['final_name'] = 'bazar';
+            $artifact['dev_dir'] = 'themes';
+            $artifact['dev_name'] = 'bazar';
+//            $artifact['make_dir'] = 'theme-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_espresso_theme';
+            break;
+        case  'bazar_theme':
+            $artifact['name'] = $name;
+            $artifact['repo'] = $list_of_repos['module'];
+            $artifact['repo_name'] = 'bazar';
+            $artifact['final_name'] = 'designssquare_com_theme_bazar';
+            $artifact['dev_name'] = 'bazar_theme';
+            $artifact['dev_dir'] = 'modules';
+            break;
+        case  'builder':
+            $artifact['name'] = $name;
+            $artifact['type'] = 'theme';
+            $artifact['repo'] = $list_of_repos['theme'];
+            $artifact['repo_name'] = 'builder';
+            $artifact['final_name'] = 'builder';
+            $artifact['dev_dir'] = 'themes';
+//            $artifact['make_dir'] = 'theme-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_builder_theme';
             break;
         case  'builder_theme':
+        case 'designssquare_com_theme_builder':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'builder';
             $artifact['final_name'] = 'designssquare_com_theme_builder';
-            break;
-        case  'builder_theme_plus':
+            $artifact['dev_name'] = 'builder_theme';
+            $artifact['dev_dir'] = 'modules';
+        break;
+        case 'builder_theme_plus':
+        case 'desigssquare_com_theme_builder_plus':
             $artifact['name'] = $name;
             $artifact['repo'] = $list_of_repos['module'];
             $artifact['repo_name'] = 'builder';
             $artifact['final_name'] = 'desigssquare_com_theme_builder_plus';
             $artifact['branch'] = 'plus';
+            $artifact['dev_name'] = 'builder_theme_plus';
+            $artifact['dev_dir'] = 'modules';
             break;
         case  'bootstrap':
             $artifact['name'] = $name;
+            $artifact['type'] = 'theme';
             $artifact['repo'] = $list_of_repos['theme'];
             $artifact['repo_name'] = 'bootstrap';
             $artifact['final_name'] = 'bootstrap';
+            $artifact['dev_dir'] = 'themes';
             break;
         case 'church':
         case  'designssquare_com_site_church':
             $artifact['name'] = $name;
+            $artifact['type'] = 'module';
             $artifact['repo'] = $list_of_repos['site'];
             $artifact['repo_name'] = 'church';
             $artifact['final_name'] = 'designssquare_com_site_church';
+            $artifact['dev_dir'] = 'modules-site';
+//            $artifact['make_dir'] = 'site-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_church_site';
             break;
+        case 'loam':
+        case  'designssquare_com_site_loam':
+            $artifact['name'] = $name;
+            $artifact['type'] = 'module';
+            $artifact['repo'] = $list_of_repos['site'];
+            $artifact['repo_name'] = 'loam';
+            $artifact['final_name'] = 'designssquare_com_site_loam';
+            $artifact['dev_dir'] = 'dev-sites';
+            $artifact['dev_dir'] = 'modules-site';
+//            $artifact['make_dir'] = 'site-builds'; //relative path to make file directory
+//            $artifact['make_name'] = 'designssquare_com_church_site';
+            break;
+        default:
+            _log('ERROR: Artifact - '.$name.' not declared');
+            $artifact['final_name'] = 'NOT-FOUND';
+
     }
 
     return $artifact;
@@ -721,3 +997,122 @@ function _project_modules_from_make($make_file_parsed)
     return array_values($projects_final);
 }
 
+function _all_artifact_types()
+{
+    return array(
+        'module',
+        'theme',
+    );
+}
+
+//removing artifacts based on whats in package
+function remove_package_artifacts($dist_package, $type)
+{
+    //removing artifacts based on whats in the package
+    $handle = opendir($dist_package . '/' . $type . 's/');
+    while ($handle && false !== ($module = readdir($handle))) {
+        if ($module !== '.' && $module !== '..') {
+            _log('deleting...'.$module);
+            remove_cur_artifact($module, $type);
+        }
+    }
+    closedir($handle);
+}
+
+//removes distribution usually when rebuilding a new one
+function remove_distribution($package){
+    (DEBUG_ON) ? drush_print('Build: ' . $package['name'] . ' exists...deleting') : '';
+    drush_shell_exec('sudo rm -R ' . $package['path'].'/'.$package['name']);
+    (DEBUG_ON) ? print_r(drush_shell_exec_output()) : '';
+    //removing old zip file as well
+    drush_shell_exec('sudo rm ' . $package['path'].'/'.$package['name'] . '.tar.gz');
+    (DEBUG_ON) ? print_r(drush_shell_exec_output()) : '';
+    //removing old zip file as well
+    drush_shell_exec('sudo rm ' . $package['path'].'/'.$package['name'] . '.zip');
+    (DEBUG_ON) ? print_r(drush_shell_exec_output()) : '';
+}
+
+//removing artifacts based on whats in the make file
+function remove_make_artifacts($name, $type){
+    foreach (all_artifacts_from_package($name, $type) as $key => $artifact) {
+        _log('Removing From Make File...artifact_name:'.$artifact['name']);
+        remove_cur_artifact($artifact['name'], $type);
+    }
+}
+
+function _log($message){
+    (DEBUG_ON) ? drush_print($message) : '';
+}
+
+//builds distribution packageName and fullPath
+function get_distribution(){
+    $package_name = '';
+    $full_path = '';
+    $config = get_config();
+
+    $widget_name = drush_get_option('artifact-name', 'blog');
+    $widget_type = drush_get_option('artifact-type', 'module');
+//    $branch = drush_get_option('branch', false);
+//    $ver = drush_get_option('ver', false);
+//    $min = drush_get_option('ver', false);
+
+//    $package_name = $config['package_prefix'] . $widget_type . '-' . $widget_name;
+//    ($branch) ? $package_name .= '-'.$branch : '';
+//    ($ver) ? $package_name .= '-'.$ver : '';
+//    ($min) ? $package_name .= '-min' : '';
+
+    $package_name = artifact_names($widget_name,$widget_type)[0];
+    $base_name = array_pop(artifact_names($widget_name, $widget_type));
+//    _log('BASE_Name:'.$base_name);
+    $dist_dir = $config['dist'];
+    $artifact_dist = $dist_dir.'/'.$widget_type.'s/';//distitribution dir for the particular artifact
+    $full_path = $artifact_dist.$base_name;
+    return array(
+        'name' => $package_name,
+        'path' => $full_path,
+//        'artifact_dist' => $artifact_dist,
+    );
+}
+
+//executes command
+function execute_command($command){
+    (DEBUG_ON) ? _log('COMMAND: ' . $command) : '';
+    drush_shell_exec($command);
+    if(!preg_match('/zip/',$command)){
+        (DEBUG_ON) ? print_r(drush_shell_exec_output()) : '';
+    }
+}
+
+//creates versions of artifact full names
+function artifact_names($name,$type){
+    $config = get_config();
+    $alternatives = array();
+    $base = $config['package_prefix'].$type.'-'.$name;
+    $alternatives[] = $base;
+
+    foreach(get_options() as $key => $option){
+        $param = drush_get_option($option, 'none');
+        if($param != 'none'){
+            $base .= '-'.$param;
+            $alternatives[] = $base;
+        }
+    }
+
+    //order more specific first
+    $final = array_reverse($alternatives);
+    if(DEBUG_ON){
+        _log('Potential Artifact Names: ');
+        print_r($final);
+    }
+
+    return $final;
+}
+
+//list of configuration options used to run builds, deployment,etc
+function get_options(){
+    return array(
+        'branch',
+        'min',
+        'ver',
+    );
+}
