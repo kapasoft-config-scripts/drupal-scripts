@@ -1,10 +1,9 @@
 <?php
 date_default_timezone_set('UTC');
 $ts = date('Ymdhis');
-define("DIST_DIR", '/Users/maxit/Sites/drupal/dist/');
-define("DEV_DIR", '/Users/maxit/Sites/drupal/');
+define("DEV_DIR", '/Users/maxit/Sites/drupal');
 define('DEBUG_ON',TRUE);
-
+define('CONFIG_ROOT','/Users/maxit/Sites/drupal/config');
 
 /******COMMON TASKS SHARED BETWEEN SCRIPTS*******/
 
@@ -652,10 +651,10 @@ function get_config()
     $config = array();
     //@ToDo getenv() not working
 //    $config['root'] = getenv('WIDGET_BUILD_ROOT');
-    $config['root'] = '/Users/maxit/Sites/drupal/config';
-    $config['work_dir'] = '/Users/maxit/Sites/drupal';
-    $config['make_root'] = '/Users/maxit/Sites/drupal/config/builds';
-    $config['dist'] = '/Users/maxit/Sites/drupal/dist';
+    $config['root'] = CONFIG_ROOT;
+    $config['work_dir'] = DEV_DIR;
+    $config['make_root'] = CONFIG_ROOT.'/builds';
+    $config['dist'] = DEV_DIR.'/dist';
     $config['package_prefix'] = 'designssquare-com-';//prefix used in front of package
 //    $var = drush_shell_exec('echo $WIDGET_BUILD_ROOT');
 //    print_r(drush_shell_exec_output());
